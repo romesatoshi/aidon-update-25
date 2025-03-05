@@ -77,15 +77,16 @@ export function UserSidebar({ history, onSelectEntry, className }: UserSidebarPr
         </ScrollArea>
       </div>
       
+      {/* Update the sidebar toggle button to be more visible and use the Menu icon */}
       {!isOpen && (
         <Button
           variant="outline"
           size="icon"
-          className="fixed top-4 right-4 z-40 rounded-full shadow-md bg-background"
+          className="fixed top-4 right-4 z-40 rounded-full shadow-md bg-background hover:bg-primary hover:text-primary-foreground"
           onClick={() => setIsOpen(true)}
           aria-label="Open history sidebar"
         >
-          <Icons.Database className="h-4 w-4" />
+          <Icons.Menu className="h-5 w-5" />
         </Button>
       )}
     </>

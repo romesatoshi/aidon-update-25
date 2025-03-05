@@ -50,7 +50,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen transition-colors duration-300">
+    <div className="min-h-screen transition-colors duration-300 relative">
       <UserSidebar 
         history={data.history} 
         onSelectEntry={handleSelectHistoryEntry} 
