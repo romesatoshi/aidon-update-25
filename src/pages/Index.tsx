@@ -4,7 +4,6 @@ import { useToast } from "@/hooks/use-toast";
 import EmergencyInput from "@/components/EmergencyInput";
 import GuidanceDisplay from "@/components/GuidanceDisplay";
 import UserSidebar from "@/components/UserSidebar";
-import ThemeToggle from "@/components/ThemeToggle";
 import useEmergencyData from "@/hooks/useEmergencyData";
 import Icons from "@/components/Icons";
 
@@ -62,7 +61,6 @@ const Index = () => {
             <Icons.Emergency className="mr-2 h-6 w-6 text-emergency" />
             Emergency First Aid Helper
           </h1>
-          <ThemeToggle />
         </div>
         
         <EmergencyInput 

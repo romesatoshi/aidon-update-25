@@ -1,10 +1,12 @@
 
 import { useState, useEffect, useRef } from "react";
 
-// Add interface for the WebkitSpeechRecognition since TypeScript doesn't have built-in types for it
-interface IWindow extends Window {
-  SpeechRecognition?: typeof SpeechRecognition;
-  webkitSpeechRecognition?: typeof SpeechRecognition;
+// Add type definitions for the WebkitSpeechRecognition API
+declare global {
+  interface Window {
+    SpeechRecognition: typeof SpeechRecognition;
+    webkitSpeechRecognition: typeof SpeechRecognition;
+  }
 }
 
 type SpeechRecognitionOptions = {
@@ -18,10 +20,8 @@ export function useSpeechRecognition(options?: SpeechRecognitionOptions) {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
-    const windowWithSpeech = window as IWindow;
-    
-    if (windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition) {
-      const SpeechRecognitionAPI = windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition;
+    if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+      const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
       
       if (SpeechRecognitionAPI) {
         recognitionRef.current = new SpeechRecognitionAPI();

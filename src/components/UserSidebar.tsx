@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { EmergencyEntry } from "@/hooks/useEmergencyData";
 import Icons from "./Icons";
+import ThemeToggle from "./ThemeToggle";
 
 interface UserSidebarProps {
   history: EmergencyEntry[];
@@ -39,14 +40,17 @@ export function UserSidebar({ history, onSelectEntry, className }: UserSidebarPr
             <Icons.Database className="mr-2 h-4 w-4" />
             Search History
           </h2>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => setIsOpen(false)}
-            aria-label="Close sidebar"
-          >
-            <Icons.Close className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsOpen(false)}
+              aria-label="Close sidebar"
+            >
+              <Icons.Close className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
         
         <ScrollArea className="h-[calc(100%-4rem)] p-4">
@@ -77,7 +81,6 @@ export function UserSidebar({ history, onSelectEntry, className }: UserSidebarPr
         </ScrollArea>
       </div>
       
-      {/* Update the sidebar toggle button to be more visible and use the Menu icon */}
       {!isOpen && (
         <Button
           variant="outline"
