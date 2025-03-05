@@ -1,11 +1,88 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import EmergencyInput from "@/components/EmergencyInput";
+import GuidanceDisplay from "@/components/GuidanceDisplay";
+import UserSidebar from "@/components/UserSidebar";
+import ThemeToggle from "@/components/ThemeToggle";
+import useEmergencyData from "@/hooks/useEmergencyData";
+import Icons from "@/components/Icons";
 
 const Index = () => {
+  const [emergency, setEmergency] = useState("");
+  const [guidance, setGuidance] = useState("");
+  const { toast } = useToast();
+  const { data, loading, addEmergencyEntry, requestGuidance } = useEmergencyData();
+
+  const handleEmergencySubmit = async (text: string) => {
+    setEmergency(text);
+    
+    try {
+      const guidanceText = await requestGuidance(text);
+      setGuidance(guidanceText);
+      
+      // Add to history
+      addEmergencyEntry(text, guidanceText);
+      
+    } catch (error) {
+      console.error("Error getting guidance:", error);
+      toast({
+        title: "Error",
+        description: "Unable to get guidance. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleReset = () => {
+    setEmergency("");
+    setGuidance("");
+  };
+
+  const handleSelectHistoryEntry = (entry: any) => {
+    setEmergency(entry.emergency);
+    setGuidance(entry.guidance);
+    
+    toast({
+      title: "Previous search loaded",
+      description: `Loaded: "${entry.emergency}"`,
+    });
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen transition-colors duration-300">
+      <UserSidebar 
+        history={data.history} 
+        onSelectEntry={handleSelectHistoryEntry} 
+      />
+      
+      <div className="container max-w-3xl mx-auto p-4 md:p-6 lg:p-8">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold flex items-center">
+            <Icons.Emergency className="mr-2 h-6 w-6 text-emergency" />
+            Emergency First Aid Helper
+          </h1>
+          <ThemeToggle />
+        </div>
+        
+        <EmergencyInput 
+          onSubmit={handleEmergencySubmit} 
+          isLoading={loading} 
+          className="mb-6"
+        />
+        
+        {guidance && (
+          <GuidanceDisplay 
+            guidance={guidance} 
+            onReset={handleReset} 
+            className="mb-6"
+          />
+        )}
+        
+        <footer className="text-xs text-center text-muted-foreground mt-8">
+          <p>This application is for informational purposes only and is not a substitute for professional medical advice.</p>
+          <p className="mt-1">Always call emergency services for serious medical situations.</p>
+        </footer>
       </div>
     </div>
   );
