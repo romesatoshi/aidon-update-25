@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { EmergencyEntry } from "@/hooks/useEmergencyData";
 import Icons from "./Icons";
 import ThemeToggle from "./ThemeToggle";
+import MedicalRecordForm from "./MedicalRecordForm";
 
 interface UserSidebarProps {
   history: EmergencyEntry[];
@@ -15,6 +16,7 @@ interface UserSidebarProps {
 
 export function UserSidebar({ history, onSelectEntry, className }: UserSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showMedicalForm, setShowMedicalForm] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -24,6 +26,10 @@ export function UserSidebar({ history, onSelectEntry, className }: UserSidebarPr
       hour: '2-digit',
       minute: '2-digit'
     }).format(date);
+  };
+
+  const toggleMedicalForm = () => {
+    setShowMedicalForm(!showMedicalForm);
   };
 
   return (
@@ -53,7 +59,28 @@ export function UserSidebar({ history, onSelectEntry, className }: UserSidebarPr
           </div>
         </div>
         
-        <ScrollArea className="h-[calc(100%-4rem)] p-4">
+        <div className="flex items-center justify-between p-3 border-b">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleMedicalForm}
+            className="w-full flex items-center justify-center gap-2"
+          >
+            <Icons.MedicalRecords className="h-4 w-4" />
+            {showMedicalForm ? "Hide Medical Records" : "Add Medical Record"}
+          </Button>
+        </div>
+        
+        {showMedicalForm && (
+          <MedicalRecordForm onClose={() => setShowMedicalForm(false)} />
+        )}
+        
+        <ScrollArea className={cn(
+          "p-4", 
+          showMedicalForm 
+            ? "h-[calc(100%-12rem)]" 
+            : "h-[calc(100%-8rem)]"
+        )}>
           {history.length > 0 ? (
             <div className="space-y-3">
               {history.map((entry) => (

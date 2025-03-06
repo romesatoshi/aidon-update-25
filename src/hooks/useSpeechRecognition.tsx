@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react";
 // Add type definitions for the WebkitSpeechRecognition API
 declare global {
   interface Window {
-    SpeechRecognition: typeof SpeechRecognition;
-    webkitSpeechRecognition: typeof SpeechRecognition;
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
   }
 }
 
@@ -17,7 +17,7 @@ export function useSpeechRecognition(options?: SpeechRecognitionOptions) {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [isSupported, setIsSupported] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     if (window.SpeechRecognition || window.webkitSpeechRecognition) {
@@ -29,7 +29,7 @@ export function useSpeechRecognition(options?: SpeechRecognitionOptions) {
         recognitionRef.current.interimResults = false;
         recognitionRef.current.lang = 'en-US';
         
-        recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+        recognitionRef.current.onresult = (event: any) => {
           const currentTranscript = event.results[0][0].transcript;
           setTranscript(currentTranscript);
           setIsListening(false);

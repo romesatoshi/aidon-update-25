@@ -9,7 +9,8 @@ import {
   RotateCcw, 
   Sun, 
   Volume2, 
-  X 
+  X,
+  ClipboardList
 } from "lucide-react";
 
 export const Icons = {
@@ -22,7 +23,8 @@ export const Icons = {
   Sun: Sun,
   Moon: Moon,
   ChevronRight: ChevronRight,
-  Menu: Menu
+  Menu: Menu,
+  MedicalRecords: ClipboardList
 };
 
 export default Icons;
