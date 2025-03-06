@@ -2,21 +2,56 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import Icons from "./Icons";
 
-export function MedicalRecordForm({ onClose }: { onClose: () => void }) {
-  const [record, setRecord] = useState("");
+// Define the medical record type
+export interface MedicalRecord {
+  id: string;
+  fullName: string;
+  bloodGroup: string;
+  allergies: string;
+  conditions: string;
+  medications: string;
+  emergencyContact: string;
+  emergencyPhone: string;
+  notes: string;
+  createdAt: string;
+}
+
+export function MedicalRecordForm({ onClose, onSave }: { 
+  onClose: () => void;
+  onSave?: (record: MedicalRecord) => void;
+}) {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    bloodGroup: "",
+    allergies: "",
+    conditions: "",
+    medications: "",
+    emergencyContact: "",
+    emergencyPhone: "",
+    notes: ""
+  });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!record.trim()) {
+    if (!formData.fullName || !formData.bloodGroup) {
       toast({
         title: "Error",
-        description: "Please enter medical record information.",
+        description: "Please enter at least full name and blood group.",
         variant: "destructive",
       });
       return;
@@ -28,12 +63,34 @@ export function MedicalRecordForm({ onClose }: { onClose: () => void }) {
       // In a real app, this would save to your backend
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       
+      const newRecord: MedicalRecord = {
+        id: Date.now().toString(),
+        ...formData,
+        createdAt: new Date().toISOString()
+      };
+
+      // Call the onSave callback if provided
+      if (onSave) {
+        onSave(newRecord);
+      }
+      
       toast({
         title: "Success",
         description: "Medical record saved successfully.",
       });
       
-      setRecord("");
+      // Reset form
+      setFormData({
+        fullName: "",
+        bloodGroup: "",
+        allergies: "",
+        conditions: "",
+        medications: "",
+        emergencyContact: "",
+        emergencyPhone: "",
+        notes: ""
+      });
+      
       onClose();
     } catch (error) {
       console.error("Error saving medical record:", error);
@@ -64,13 +121,97 @@ export function MedicalRecordForm({ onClose }: { onClose: () => void }) {
         </Button>
       </div>
       
-      <form onSubmit={handleSubmit}>
-        <Textarea
-          placeholder="Enter medical record information here..."
-          value={record}
-          onChange={(e) => setRecord(e.target.value)}
-          className="mb-3 min-h-[120px]"
-        />
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div>
+          <label htmlFor="fullName" className="text-xs font-medium mb-1 block">Full Name*</label>
+          <Input
+            id="fullName"
+            name="fullName"
+            placeholder="Full Name"
+            value={formData.fullName}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="bloodGroup" className="text-xs font-medium mb-1 block">Blood Group*</label>
+          <Input
+            id="bloodGroup"
+            name="bloodGroup"
+            placeholder="Blood Group (e.g., A+, O-, AB+)"
+            value={formData.bloodGroup}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="allergies" className="text-xs font-medium mb-1 block">Allergies</label>
+          <Input
+            id="allergies"
+            name="allergies"
+            placeholder="Known allergies"
+            value={formData.allergies}
+            onChange={handleInputChange}
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="conditions" className="text-xs font-medium mb-1 block">Medical Conditions</label>
+          <Input
+            id="conditions"
+            name="conditions"
+            placeholder="Existing medical conditions"
+            value={formData.conditions}
+            onChange={handleInputChange}
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="medications" className="text-xs font-medium mb-1 block">Current Medications</label>
+          <Input
+            id="medications"
+            name="medications"
+            placeholder="Current medications"
+            value={formData.medications}
+            onChange={handleInputChange}
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="emergencyContact" className="text-xs font-medium mb-1 block">Emergency Contact</label>
+          <Input
+            id="emergencyContact"
+            name="emergencyContact"
+            placeholder="Emergency contact name"
+            value={formData.emergencyContact}
+            onChange={handleInputChange}
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="emergencyPhone" className="text-xs font-medium mb-1 block">Emergency Phone</label>
+          <Input
+            id="emergencyPhone"
+            name="emergencyPhone"
+            placeholder="Emergency contact phone"
+            value={formData.emergencyPhone}
+            onChange={handleInputChange}
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="notes" className="text-xs font-medium mb-1 block">Additional Notes</label>
+          <Textarea
+            id="notes"
+            name="notes"
+            placeholder="Any other important medical information..."
+            value={formData.notes}
+            onChange={handleInputChange}
+            className="min-h-[80px]"
+          />
+        </div>
         
         <div className="flex justify-end">
           <Button 

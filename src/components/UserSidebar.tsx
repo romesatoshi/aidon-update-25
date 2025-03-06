@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 import { EmergencyEntry } from "@/hooks/useEmergencyData";
 import Icons from "./Icons";
 import ThemeToggle from "./ThemeToggle";
-import MedicalRecordForm from "./MedicalRecordForm";
+import MedicalRecordForm, { MedicalRecord } from "./MedicalRecordForm";
+import MedicalRecordsList from "./MedicalRecordsList";
 
 interface UserSidebarProps {
   history: EmergencyEntry[];
@@ -17,6 +18,8 @@ interface UserSidebarProps {
 export function UserSidebar({ history, onSelectEntry, className }: UserSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showMedicalForm, setShowMedicalForm] = useState(false);
+  const [showMedicalRecords, setShowMedicalRecords] = useState(false);
+  const [savedRecords, setSavedRecords] = useState<MedicalRecord[]>([]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -30,6 +33,23 @@ export function UserSidebar({ history, onSelectEntry, className }: UserSidebarPr
 
   const toggleMedicalForm = () => {
     setShowMedicalForm(!showMedicalForm);
+    if (showMedicalRecords) setShowMedicalRecords(false);
+  };
+
+  const toggleMedicalRecords = () => {
+    setShowMedicalRecords(!showMedicalRecords);
+    if (showMedicalForm) setShowMedicalForm(false);
+  };
+
+  const handleSaveMedicalRecord = (record: MedicalRecord) => {
+    setSavedRecords(prev => [record, ...prev]);
+  };
+
+  const calculateContentHeight = () => {
+    if (showMedicalForm || showMedicalRecords) {
+      return "h-[calc(100%-12rem)]";
+    }
+    return "h-[calc(100%-8rem)]";
   };
 
   return (
@@ -59,28 +79,51 @@ export function UserSidebar({ history, onSelectEntry, className }: UserSidebarPr
           </div>
         </div>
         
-        <div className="flex items-center justify-between p-3 border-b">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleMedicalForm}
-            className="w-full flex items-center justify-center gap-2"
-          >
-            <Icons.MedicalRecords className="h-4 w-4" />
-            {showMedicalForm ? "Hide Medical Records" : "Add Medical Record"}
-          </Button>
+        <div className="flex flex-col gap-2 p-3 border-b">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleMedicalForm}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2",
+                showMedicalForm && "bg-primary text-primary-foreground hover:bg-primary/90"
+              )}
+            >
+              <Icons.MedicalRecords className="h-4 w-4" />
+              {showMedicalForm ? "Hide Form" : "Add Record"}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleMedicalRecords}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2",
+                showMedicalRecords && "bg-primary text-primary-foreground hover:bg-primary/90"
+              )}
+            >
+              <Icons.FileText className="h-4 w-4" />
+              {showMedicalRecords ? "Hide Records" : "View Records"}
+            </Button>
+          </div>
         </div>
         
         {showMedicalForm && (
-          <MedicalRecordForm onClose={() => setShowMedicalForm(false)} />
+          <MedicalRecordForm 
+            onClose={() => setShowMedicalForm(false)} 
+            onSave={handleSaveMedicalRecord}
+          />
         )}
         
-        <ScrollArea className={cn(
-          "p-4", 
-          showMedicalForm 
-            ? "h-[calc(100%-12rem)]" 
-            : "h-[calc(100%-8rem)]"
-        )}>
+        {showMedicalRecords && (
+          <MedicalRecordsList 
+            records={savedRecords} 
+            onClose={() => setShowMedicalRecords(false)} 
+          />
+        )}
+        
+        <ScrollArea className={cn("p-4", calculateContentHeight())}>
           {history.length > 0 ? (
             <div className="space-y-3">
               {history.map((entry) => (

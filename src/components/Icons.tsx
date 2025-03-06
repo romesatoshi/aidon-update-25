@@ -2,6 +2,7 @@
 import { 
   AlertCircle, 
   ArrowLeft, 
+  ChevronDown,
   ChevronRight, 
   Database, 
   Menu,
@@ -10,7 +11,8 @@ import {
   Sun, 
   Volume2, 
   X,
-  ClipboardList
+  ClipboardList,
+  FileText
 } from "lucide-react";
 
 export const Icons = {
@@ -23,8 +25,10 @@ export const Icons = {
   Sun: Sun,
   Moon: Moon,
   ChevronRight: ChevronRight,
+  ChevronDown: ChevronDown,
   Menu: Menu,
-  MedicalRecords: ClipboardList
+  MedicalRecords: ClipboardList,
+  FileText: FileText
 };
 
 export default Icons;
