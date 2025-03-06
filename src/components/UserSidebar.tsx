@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -17,11 +17,16 @@ interface UserSidebarProps {
   className?: string;
 }
 
-export function UserSidebar({ history, onSelectEntry, className }: UserSidebarProps) {
+export function UserSidebar({ 
+  history, 
+  onSelectEntry, 
+  medicalRecords, 
+  onSaveMedicalRecord, 
+  className 
+}: UserSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showMedicalForm, setShowMedicalForm] = useState(false);
   const [showMedicalRecords, setShowMedicalRecords] = useState(false);
-  const [savedRecords, setSavedRecords] = useState<MedicalRecord[]>([]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -41,10 +46,6 @@ export function UserSidebar({ history, onSelectEntry, className }: UserSidebarPr
   const toggleMedicalRecords = () => {
     setShowMedicalRecords(!showMedicalRecords);
     if (showMedicalForm) setShowMedicalForm(false);
-  };
-
-  const handleSaveMedicalRecord = (record: MedicalRecord) => {
-    setSavedRecords(prev => [record, ...prev]);
   };
 
   const calculateContentHeight = () => {
@@ -114,13 +115,13 @@ export function UserSidebar({ history, onSelectEntry, className }: UserSidebarPr
         {showMedicalForm && (
           <MedicalRecordForm 
             onClose={() => setShowMedicalForm(false)} 
-            onSave={handleSaveMedicalRecord}
+            onSave={onSaveMedicalRecord}
           />
         )}
         
         {showMedicalRecords && (
           <MedicalRecordsList 
-            records={savedRecords} 
+            records={medicalRecords} 
             onClose={() => setShowMedicalRecords(false)} 
           />
         )}

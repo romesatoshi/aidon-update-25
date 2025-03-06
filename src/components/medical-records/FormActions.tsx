@@ -11,9 +11,9 @@ export function FormActions({ loading }: FormActionsProps) {
       <Button 
         type="submit" 
         disabled={loading}
-        className="bg-primary"
+        className="bg-primary hover:bg-primary/90 text-primary-foreground"
       >
-        {loading ? "Saving..." : "Save Record"}
+        {loading ? "Saving..." : "Save Medical Record"}
       </Button>
     </div>
   );
