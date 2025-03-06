@@ -6,12 +6,14 @@ import { cn } from "@/lib/utils";
 import { EmergencyEntry } from "@/hooks/useEmergencyData";
 import Icons from "./Icons";
 import ThemeToggle from "./ThemeToggle";
-import MedicalRecordForm, { MedicalRecord } from "./MedicalRecordForm";
+import MedicalRecordForm, { MedicalRecord } from "./medical-records/MedicalRecordForm";
 import MedicalRecordsList from "./MedicalRecordsList";
 
 interface UserSidebarProps {
   history: EmergencyEntry[];
   onSelectEntry: (entry: EmergencyEntry) => void;
+  medicalRecords: MedicalRecord[];
+  onSaveMedicalRecord: (record: MedicalRecord) => void;
   className?: string;
 }
 

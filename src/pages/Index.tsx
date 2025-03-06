@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import EmergencyInput from "@/components/EmergencyInput";
@@ -6,7 +5,7 @@ import GuidanceDisplay from "@/components/GuidanceDisplay";
 import UserSidebar from "@/components/UserSidebar";
 import useEmergencyData from "@/hooks/useEmergencyData";
 import Icons from "@/components/Icons";
-import { type MedicalRecord } from "@/components/MedicalRecordForm";
+import { type MedicalRecord } from "@/components/medical-records/MedicalRecordForm";
 
 const Index = () => {
   const [emergency, setEmergency] = useState("");

@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Icons from "./Icons";
-import { type MedicalRecord } from "./MedicalRecordForm";
+import { type MedicalRecord } from "./medical-records/MedicalRecordForm";
 
 interface MedicalRecordsListProps {
   records: MedicalRecord[];
