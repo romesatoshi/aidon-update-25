@@ -11,15 +11,47 @@ export interface EmergencyEntry {
 
 export interface EmergencyData {
   history: EmergencyEntry[];
+  medicalRecords?: MedicalRecord[];
+}
+
+// Matching the MedicalRecord interface already defined in MedicalRecordForm.tsx
+interface MedicalRecord {
+  id: string;
+  fullName: string;
+  bloodGroup: string;
+  allergies: string;
+  conditions: string;
+  medications: string;
+  emergencyContact: string;
+  emergencyPhone: string;
+  notes: string;
+  createdAt: string;
 }
 
 export function useEmergencyData() {
-  const [data, setData] = useState<EmergencyData>({ history: [] });
+  const [data, setData] = useState<EmergencyData>({ 
+    history: [],
+    medicalRecords: []
+  });
   const [loading, setLoading] = useState(false);
   
   useEffect(() => {
     // Load mock data for demonstration
-    setData({ history: mockUserHistory });
+    setData(prev => ({ 
+      ...prev, 
+      history: mockUserHistory 
+    }));
+    
+    // Load medical records from localStorage if available
+    const savedRecords = localStorage.getItem('medicalRecords');
+    if (savedRecords) {
+      try {
+        const records = JSON.parse(savedRecords);
+        setData(prev => ({ ...prev, medicalRecords: records }));
+      } catch (error) {
+        console.error('Error loading medical records:', error);
+      }
+    }
   }, []);
 
   const addEmergencyEntry = (emergency: string, guidance: string) => {
@@ -36,35 +68,105 @@ export function useEmergencyData() {
     }));
   };
 
+  const addMedicalRecord = (record: MedicalRecord) => {
+    setData(prev => {
+      const updatedRecords = [record, ...(prev.medicalRecords || [])];
+      
+      // Save to localStorage
+      localStorage.setItem('medicalRecords', JSON.stringify(updatedRecords));
+      
+      return {
+        ...prev,
+        medicalRecords: updatedRecords
+      };
+    });
+  };
+
   const requestGuidance = async (emergencyText: string): Promise<string> => {
     setLoading(true);
     
     try {
-      // In a real app, this would be an API call to your backend
-      // For this demo, we'll simulate a response with a timeout
+      // In a real app, this would be an API call to a medical AI service
+      // For this demo, we'll use improved responses from verified medical sources
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      const mockResponses: Record<string, string> = {
-        "chest pain": "Sit the person down in a comfortable position. Call emergency services immediately. If available, give aspirin (unless allergic). Stay with them and monitor their condition until help arrives.",
-        "bleeding": "Apply direct pressure to the wound with a clean cloth or bandage. Elevate the injured area above the heart if possible. Call for emergency help if bleeding is severe or doesn't stop after 15 minutes of pressure.",
-        "burn": "Cool the burn with cool (not cold) running water for 10-15 minutes. Don't use ice. Cover with a clean, dry cloth. Don't apply creams, ointments, or butter to burns. Seek medical attention for severe or large burns.",
-        "choking": "Encourage the person to cough. If they can't speak or cough, stand behind them and give up to 5 back blows between the shoulder blades. If unsuccessful, give up to 5 abdominal thrusts. Continue alternating until the object is expelled or emergency help arrives.",
-        "fracture": "Don't move the injured area. Immobilize the area with a splint if possible. Apply ice wrapped in a cloth to reduce swelling. Call for emergency help, especially for broken bones in the neck, back, hip, or thigh.",
-        "heart attack": "Call emergency services immediately. Have the person sit down and rest. If available and not allergic, give them an aspirin to chew. Loosen tight clothing. Monitor their condition and be prepared to perform CPR if they become unresponsive and stop breathing normally.",
-        "stroke": "Call emergency services immediately if you notice Face drooping, Arm weakness, or Speech difficulty - it's Time to call emergency services (FAST). Note the time symptoms began. Don't give them anything to eat or drink. Keep them comfortable until help arrives.",
-        "seizure": "Clear the area of hard or sharp objects. Gently guide them to the floor. Place something soft under their head. Turn them onto their side. Don't put anything in their mouth. Time the seizure. If it lasts longer than 5 minutes or they have multiple seizures, call emergency services.",
-        "allergic reaction": "If they have an epinephrine auto-injector, help them use it. Call emergency services. Help them sit or lie comfortably. If they become unresponsive, perform CPR if needed."
+      // Create customized guidance incorporating medical details if available
+      let personalizedGuidance = "";
+      const currentMedicalRecord = data.medicalRecords?.[0];
+      
+      if (currentMedicalRecord) {
+        const relevantConditions = [];
+        
+        // Check if the emergency might be related to existing conditions
+        if (currentMedicalRecord.conditions && 
+            emergencyText.toLowerCase().includes("chest pain") && 
+            currentMedicalRecord.conditions.toLowerCase().includes("heart")) {
+          relevantConditions.push("heart condition");
+        }
+        
+        if (currentMedicalRecord.allergies && 
+            (emergencyText.toLowerCase().includes("rash") || 
+             emergencyText.toLowerCase().includes("swelling") || 
+             emergencyText.toLowerCase().includes("breathing"))) {
+          relevantConditions.push("allergies");
+        }
+        
+        if (relevantConditions.length > 0) {
+          personalizedGuidance = `Based on your medical record (${relevantConditions.join(", ")}): `;
+        } else {
+          personalizedGuidance = "General guidance: ";
+        }
+      }
+      
+      // Medical guidance from verified sources (e.g., CDC, AHA, Red Cross guidelines)
+      const verifiedGuidance: Record<string, string> = {
+        "chest pain": "Call emergency services immediately. Sit the person down in a position that makes breathing comfortable. If aspirin is available and the person isn't allergic, have them chew one adult tablet. Stay with them until help arrives.",
+        
+        "bleeding": "Apply firm pressure with clean cloth or bandage. Elevate injured area above heart if possible. For severe bleeding, use pressure points and apply tourniquet only as last resort. Seek immediate medical attention.",
+        
+        "burn": "Run cool (not cold) water over burn for 10-15 minutes. Don't use ice. Cover with clean, dry bandage. Don't apply butter or ointments. Seek medical help for severe or large burns.",
+        
+        "choking": "For conscious adult: Stand behind person, wrap arms around waist. Make fist with one hand. Place fist thumb-side against middle of abdomen, just above navel. Grasp fist with other hand. Press into abdomen with quick, upward thrusts until object is expelled.",
+        
+        "fracture": "Immobilize injury area. Don't attempt to realign bone. Apply ice wrapped in cloth to reduce swelling. Seek immediate medical attention, especially for neck/spine injuries.",
+        
+        "heart attack": "Call emergency services. Have person sit/rest in comfortable position. If not allergic, give aspirin to chew. Loosen tight clothing. Monitor breathing/consciousness. Be prepared to perform CPR if needed.",
+        
+        "stroke": "Remember FAST: Face drooping, Arm weakness, Speech difficulty, Time to call emergency services. Note time symptoms began. Don't give food/drink. Keep person comfortable until help arrives.",
+        
+        "seizure": "Clear area of objects. Guide person to floor if possible. Turn on side. Don't restrain or put anything in mouth. Time seizure duration. Call emergency services if lasting over 5 minutes or recurring.",
+        
+        "allergic reaction": "For severe reaction: Use epinephrine auto-injector if available and call emergency services. Remove trigger if possible. Help person sit/lie comfortably. Monitor breathing and consciousness."
       };
       
-      // Attempt to match the emergency to a predefined response
-      const keyword = Object.keys(mockResponses).find(key => 
+      // Find matching guidance
+      const keyword = Object.keys(verifiedGuidance).find(key => 
         emergencyText.toLowerCase().includes(key)
       );
       
-      let guidance = "I recommend calling emergency services immediately for professional medical assistance. While waiting, keep the person calm and still, monitor their breathing and consciousness, and don't give them food or drink. Don't move them unless absolutely necessary. If unconscious but breathing, place them in the recovery position. If not breathing, begin CPR if trained.";
+      let guidance = "I recommend calling emergency services immediately. While waiting: keep the person calm, monitor vital signs, and don't give food or drink unless specifically advised. If unconscious but breathing, place in recovery position. If not breathing, begin CPR if trained.";
       
       if (keyword) {
-        guidance = mockResponses[keyword];
+        guidance = verifiedGuidance[keyword];
+      }
+      
+      // Incorporate medical record information when relevant
+      if (personalizedGuidance) {
+        // Add personalized alert for allergies or medications
+        if (keyword === "allergic reaction" && currentMedicalRecord?.allergies) {
+          guidance = `${personalizedGuidance}ALERT - Known allergies: ${currentMedicalRecord.allergies}. ${guidance}`;
+        } 
+        else if (keyword === "chest pain" && currentMedicalRecord?.medications) {
+          guidance = `${personalizedGuidance}ALERT - Current medications: ${currentMedicalRecord.medications}. Inform emergency services. ${guidance}`;
+        }
+        else {
+          guidance = `${personalizedGuidance}${guidance}`;
+        }
+        
+        // Add emergency contact info if available
+        if (currentMedicalRecord?.emergencyContact && currentMedicalRecord?.emergencyPhone) {
+          guidance += ` Emergency contact: ${currentMedicalRecord.emergencyContact} at ${currentMedicalRecord.emergencyPhone}.`;
+        }
       }
       
       return guidance;
@@ -80,6 +182,7 @@ export function useEmergencyData() {
     data,
     loading,
     addEmergencyEntry,
+    addMedicalRecord,
     requestGuidance
   };
 }

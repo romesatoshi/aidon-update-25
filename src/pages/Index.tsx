@@ -6,12 +6,13 @@ import GuidanceDisplay from "@/components/GuidanceDisplay";
 import UserSidebar from "@/components/UserSidebar";
 import useEmergencyData from "@/hooks/useEmergencyData";
 import Icons from "@/components/Icons";
+import { type MedicalRecord } from "@/components/MedicalRecordForm";
 
 const Index = () => {
   const [emergency, setEmergency] = useState("");
   const [guidance, setGuidance] = useState("");
   const { toast } = useToast();
-  const { data, loading, addEmergencyEntry, requestGuidance } = useEmergencyData();
+  const { data, loading, addEmergencyEntry, addMedicalRecord, requestGuidance } = useEmergencyData();
 
   const handleEmergencySubmit = async (text: string) => {
     setEmergency(text);
@@ -48,11 +49,22 @@ const Index = () => {
     });
   };
 
+  const handleSaveMedicalRecord = (record: MedicalRecord) => {
+    addMedicalRecord(record);
+    
+    toast({
+      title: "Medical record saved",
+      description: "Your medical information has been saved successfully.",
+    });
+  };
+
   return (
     <div className="min-h-screen transition-colors duration-300 relative">
       <UserSidebar 
         history={data.history} 
-        onSelectEntry={handleSelectHistoryEntry} 
+        medicalRecords={data.medicalRecords || []}
+        onSelectEntry={handleSelectHistoryEntry}
+        onSaveMedicalRecord={handleSaveMedicalRecord}
       />
       
       <div className="container max-w-3xl mx-auto p-4 md:p-6 lg:p-8">
