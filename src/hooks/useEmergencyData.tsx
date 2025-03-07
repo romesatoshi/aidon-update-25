@@ -81,6 +81,38 @@ export function useEmergencyData() {
       };
     });
   };
+  
+  const editMedicalRecord = (updatedRecord: MedicalRecord) => {
+    setData(prev => {
+      const existingRecords = prev.medicalRecords || [];
+      const updatedRecords = existingRecords.map(record => 
+        record.id === updatedRecord.id ? updatedRecord : record
+      );
+      
+      // Save to localStorage
+      localStorage.setItem('medicalRecords', JSON.stringify(updatedRecords));
+      
+      return {
+        ...prev,
+        medicalRecords: updatedRecords
+      };
+    });
+  };
+  
+  const deleteMedicalRecord = (id: string) => {
+    setData(prev => {
+      const existingRecords = prev.medicalRecords || [];
+      const updatedRecords = existingRecords.filter(record => record.id !== id);
+      
+      // Save to localStorage
+      localStorage.setItem('medicalRecords', JSON.stringify(updatedRecords));
+      
+      return {
+        ...prev,
+        medicalRecords: updatedRecords
+      };
+    });
+  };
 
   const requestGuidance = async (emergencyText: string): Promise<string> => {
     setLoading(true);
@@ -183,6 +215,8 @@ export function useEmergencyData() {
     loading,
     addEmergencyEntry,
     addMedicalRecord,
+    editMedicalRecord,
+    deleteMedicalRecord,
     requestGuidance
   };
 }

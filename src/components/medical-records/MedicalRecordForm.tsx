@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { FormHeader } from "./FormHeader";
 import { FormField } from "./FormField";
@@ -22,9 +22,10 @@ export interface MedicalRecord {
 export interface MedicalRecordFormProps { 
   onClose: () => void;
   onSave?: (record: MedicalRecord) => void;
+  initialData?: MedicalRecord;
 }
 
-export function MedicalRecordForm({ onClose, onSave }: MedicalRecordFormProps) {
+export function MedicalRecordForm({ onClose, onSave, initialData }: MedicalRecordFormProps) {
   const [formData, setFormData] = useState({
     fullName: "",
     bloodGroup: "",
@@ -37,6 +38,22 @@ export function MedicalRecordForm({ onClose, onSave }: MedicalRecordFormProps) {
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  
+  // Load initial data if provided (for editing)
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        fullName: initialData.fullName,
+        bloodGroup: initialData.bloodGroup,
+        allergies: initialData.allergies || "",
+        conditions: initialData.conditions || "",
+        medications: initialData.medications || "",
+        emergencyContact: initialData.emergencyContact || "",
+        emergencyPhone: initialData.emergencyPhone || "",
+        notes: initialData.notes || ""
+      });
+    }
+  }, [initialData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -64,33 +81,40 @@ export function MedicalRecordForm({ onClose, onSave }: MedicalRecordFormProps) {
       // In a real app, this would save to your backend
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       
-      const newRecord: MedicalRecord = {
-        id: Date.now().toString(),
-        ...formData,
-        createdAt: new Date().toISOString()
-      };
+      const updatedRecord: MedicalRecord = initialData ? 
+        {
+          ...initialData,
+          ...formData,
+        } : 
+        {
+          id: Date.now().toString(),
+          ...formData,
+          createdAt: new Date().toISOString()
+        };
 
       // Call the onSave callback if provided
       if (onSave) {
-        onSave(newRecord);
+        onSave(updatedRecord);
       }
       
       toast({
         title: "Success",
-        description: "Medical record saved successfully.",
+        description: initialData ? "Medical record updated successfully." : "Medical record saved successfully.",
       });
       
-      // Reset form
-      setFormData({
-        fullName: "",
-        bloodGroup: "",
-        allergies: "",
-        conditions: "",
-        medications: "",
-        emergencyContact: "",
-        emergencyPhone: "",
-        notes: ""
-      });
+      if (!initialData) {
+        // Only reset form if not editing
+        setFormData({
+          fullName: "",
+          bloodGroup: "",
+          allergies: "",
+          conditions: "",
+          medications: "",
+          emergencyContact: "",
+          emergencyPhone: "",
+          notes: ""
+        });
+      }
       
       onClose();
     } catch (error) {
@@ -107,7 +131,7 @@ export function MedicalRecordForm({ onClose, onSave }: MedicalRecordFormProps) {
 
   return (
     <div className="p-4 border-t">
-      <FormHeader onClose={onClose} />
+      <FormHeader onClose={onClose} title={initialData ? "Edit Medical Record" : "Add Medical Record"} />
       
       <form onSubmit={handleSubmit} className="space-y-3">
         <FormField
@@ -177,7 +201,7 @@ export function MedicalRecordForm({ onClose, onSave }: MedicalRecordFormProps) {
           multiline
         />
         
-        <FormActions loading={loading} />
+        <FormActions loading={loading} isEditing={!!initialData} />
       </form>
     </div>
   );

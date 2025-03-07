@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 
 interface FormActionsProps {
   loading: boolean;
+  isEditing?: boolean;
 }
 
-export function FormActions({ loading }: FormActionsProps) {
+export function FormActions({ loading, isEditing }: FormActionsProps) {
   return (
     <div className="flex justify-end">
       <Button 
@@ -13,7 +14,9 @@ export function FormActions({ loading }: FormActionsProps) {
         disabled={loading}
         className="bg-primary hover:bg-primary/90 text-primary-foreground"
       >
-        {loading ? "Saving..." : "Save Medical Record"}
+        {loading 
+          ? (isEditing ? "Updating..." : "Saving...") 
+          : (isEditing ? "Update Medical Record" : "Save Medical Record")}
       </Button>
     </div>
   );

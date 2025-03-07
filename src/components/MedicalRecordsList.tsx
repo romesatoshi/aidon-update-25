@@ -1,16 +1,26 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Icons from "./Icons";
 import { type MedicalRecord } from "./medical-records/MedicalRecordForm";
+import MedicalRecordForm from "./medical-records/MedicalRecordForm";
 
 interface MedicalRecordsListProps {
   records: MedicalRecord[];
   onClose: () => void;
+  onDelete?: (id: string) => void;
+  onEdit?: (record: MedicalRecord) => void;
 }
 
-export function MedicalRecordsList({ records, onClose }: MedicalRecordsListProps) {
+export function MedicalRecordsList({ 
+  records, 
+  onClose, 
+  onDelete, 
+  onEdit 
+}: MedicalRecordsListProps) {
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null);
+  const [editingRecord, setEditingRecord] = useState<MedicalRecord | null>(null);
 
   const toggleRecordDetails = (id: string) => {
     if (expandedRecord === id) {
@@ -18,6 +28,17 @@ export function MedicalRecordsList({ records, onClose }: MedicalRecordsListProps
     } else {
       setExpandedRecord(id);
     }
+  };
+
+  const handleEdit = (record: MedicalRecord) => {
+    setEditingRecord(record);
+  };
+
+  const handleSaveEdit = (updatedRecord: MedicalRecord) => {
+    if (onEdit) {
+      onEdit(updatedRecord);
+    }
+    setEditingRecord(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -28,6 +49,19 @@ export function MedicalRecordsList({ records, onClose }: MedicalRecordsListProps
       year: 'numeric'
     }).format(date);
   };
+
+  // If we're editing a record, show the form instead
+  if (editingRecord) {
+    return (
+      <div className="p-4 border-t">
+        <MedicalRecordForm 
+          onClose={() => setEditingRecord(null)} 
+          onSave={handleSaveEdit}
+          initialData={editingRecord}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 border-t">
@@ -54,23 +88,48 @@ export function MedicalRecordsList({ records, onClose }: MedicalRecordsListProps
                 key={record.id} 
                 className="p-3 rounded-md border bg-card hover:border-primary transition-all"
               >
-                <div 
-                  className="flex justify-between items-center cursor-pointer"
-                  onClick={() => toggleRecordDetails(record.id)}
-                >
-                  <div>
+                <div className="flex justify-between items-center">
+                  <div 
+                    className="flex-1 cursor-pointer"
+                    onClick={() => toggleRecordDetails(record.id)}
+                  >
                     <p className="font-medium">{record.fullName}</p>
                     <p className="text-xs text-muted-foreground">
                       Blood Group: {record.bloodGroup} • Added: {formatDate(record.createdAt)}
                     </p>
                   </div>
-                  <Button variant="ghost" size="icon">
-                    {expandedRecord === record.id ? (
-                      <Icons.ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <Icons.ChevronRight className="h-4 w-4" />
-                    )}
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleEdit(record)}
+                      className="h-8 w-8"
+                      aria-label="Edit record"
+                    >
+                      <Icons.Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => onDelete && onDelete(record.id)}
+                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      aria-label="Delete record"
+                    >
+                      <Icons.Trash className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => toggleRecordDetails(record.id)}
+                      className="h-8 w-8"
+                    >
+                      {expandedRecord === record.id ? (
+                        <Icons.ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <Icons.ChevronRight className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
                 
                 {expandedRecord === record.id && (

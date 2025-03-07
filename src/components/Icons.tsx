@@ -12,7 +12,9 @@ import {
   Volume2, 
   X,
   ClipboardList,
-  FileText
+  FileText,
+  Trash2,
+  PenLine
 } from "lucide-react";
 
 export const Icons = {
@@ -28,7 +30,9 @@ export const Icons = {
   ChevronDown: ChevronDown,
   Menu: Menu,
   MedicalRecords: ClipboardList,
-  FileText: FileText
+  FileText: FileText,
+  Trash: Trash2,
+  Edit: PenLine
 };
 
 export default Icons;

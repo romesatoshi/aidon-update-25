@@ -1,18 +1,16 @@
 
-import Icons from "../Icons";
 import { Button } from "@/components/ui/button";
+import Icons from "../Icons";
 
 interface FormHeaderProps {
   onClose: () => void;
+  title?: string;
 }
 
-export function FormHeader({ onClose }: FormHeaderProps) {
+export function FormHeader({ onClose, title = "Add Medical Record" }: FormHeaderProps) {
   return (
-    <div className="flex items-center justify-between mb-3">
-      <h3 className="font-medium flex items-center">
-        <Icons.MedicalRecords className="mr-2 h-4 w-4" />
-        Add Medical Record
-      </h3>
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="font-medium">{title}</h3>
       <Button 
         variant="ghost" 
         size="icon" 

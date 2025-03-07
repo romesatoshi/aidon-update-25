@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,8 @@ interface UserSidebarProps {
   onSelectEntry: (entry: EmergencyEntry) => void;
   medicalRecords: MedicalRecord[];
   onSaveMedicalRecord: (record: MedicalRecord) => void;
+  onEditMedicalRecord?: (record: MedicalRecord) => void;
+  onDeleteMedicalRecord?: (id: string) => void;
   className?: string;
 }
 
@@ -21,7 +23,9 @@ export function UserSidebar({
   history, 
   onSelectEntry, 
   medicalRecords, 
-  onSaveMedicalRecord, 
+  onSaveMedicalRecord,
+  onEditMedicalRecord,
+  onDeleteMedicalRecord,
   className 
 }: UserSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -123,6 +127,8 @@ export function UserSidebar({
           <MedicalRecordsList 
             records={medicalRecords} 
             onClose={() => setShowMedicalRecords(false)} 
+            onDelete={onDeleteMedicalRecord}
+            onEdit={onEditMedicalRecord}
           />
         )}
         
