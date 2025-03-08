@@ -49,7 +49,7 @@ export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInpu
     <div className={cn("space-y-3", className)}>
       <div className="relative">
         <Textarea
-          placeholder="Describe the emergency (e.g., 'someone is choking' or 'chest pain')"
+          placeholder="Describe the emergency specifically (e.g., 'person unconscious after fall' or 'child choking on food')"
           value={text}
           onChange={(e) => setText(e.target.value)}
           className="min-h-[100px] p-4 resize-none transition-all focus-visible:ring-primary"
@@ -80,7 +80,7 @@ export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInpu
           disabled={isLoading || !text.trim()}
         >
           <Icons.Emergency className="mr-2 h-4 w-4" />
-          {isLoading ? "Getting guidance..." : "Get Emergency Guidance"}
+          {isLoading ? "Getting guidance..." : "Get Specific First Aid Steps"}
         </Button>
         
         {isSupported && (
