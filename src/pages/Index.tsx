@@ -7,12 +7,15 @@ import UserSidebar from "@/components/UserSidebar";
 import useEmergencyData from "@/hooks/useEmergencyData";
 import Icons from "@/components/Icons";
 import { type MedicalRecord } from "@/components/medical-records/MedicalRecordForm";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [emergency, setEmergency] = useState("");
   const [guidance, setGuidance] = useState("");
   const [showFollowUp, setShowFollowUp] = useState(false);
   const { toast } = useToast();
+  const { user, logout } = useAuth();
   const { 
     data, 
     loading, 
@@ -135,6 +138,15 @@ const Index = () => {
             <Icons.Emergency className="mr-2 h-6 w-6 text-emergency" />
             Emergency First Aid Helper
           </h1>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground hidden md:inline">
+              Welcome, {user?.name}
+            </span>
+            <Button variant="outline" size="sm" onClick={logout}>
+              <Icons.Logout className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Logout</span>
+            </Button>
+          </div>
         </div>
         
         <EmergencyInput 
