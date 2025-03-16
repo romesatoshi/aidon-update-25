@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -20,7 +19,10 @@ const Index = () => {
     data, 
     loading, 
     addEmergencyEntry, 
-    requestGuidance 
+    requestGuidance,
+    addMedicalRecord,
+    editMedicalRecord,
+    deleteMedicalRecord
   } = useEmergencyData();
 
   const handleEmergencySubmit = async (text: string) => {
@@ -30,7 +32,6 @@ const Index = () => {
       const guidanceText = await requestGuidance(text);
       setGuidance(guidanceText);
       
-      // After guidance is shown, set showFollowUp to true
       setShowFollowUp(true);
       
       const emergencyTitle = text.split('\n')[0];
@@ -53,7 +54,6 @@ const Index = () => {
   };
 
   const handleFollowUpSubmit = (additionalInfo: Record<string, string>) => {
-    // Update the emergency history with the additional information
     if (Object.keys(additionalInfo).length > 0) {
       let updatedEmergency = emergency;
       
@@ -66,8 +66,6 @@ const Index = () => {
       
       setEmergency(updatedEmergency);
       
-      // Could request updated guidance here if needed
-      // For now, just update the emergency entry
       const emergencyTitle = emergency.split('\n')[0];
       addEmergencyEntry(emergencyTitle, guidance, additionalInfo);
       
@@ -91,12 +89,24 @@ const Index = () => {
     });
   };
 
+  const handleSaveMedicalRecord = (record: any) => {
+    addMedicalRecord(record);
+    
+    toast({
+      title: "Medical record saved",
+      description: "Your medical information has been saved successfully.",
+    });
+  };
+
   return (
     <div className="min-h-screen transition-colors duration-300 relative">
       <UserSidebar 
         history={data.history} 
-        medicalRecords={[]}
+        medicalRecords={data.medicalRecords || []}
         onSelectEntry={handleSelectHistoryEntry}
+        onSaveMedicalRecord={handleSaveMedicalRecord}
+        onEditMedicalRecord={editMedicalRecord}
+        onDeleteMedicalRecord={deleteMedicalRecord}
       />
       
       <div className="container max-w-3xl mx-auto p-4 md:p-6 lg:p-8">
@@ -107,21 +117,9 @@ const Index = () => {
           </h1>
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
-              <>
-                <span className="text-sm text-muted-foreground hidden md:inline">
-                  Welcome, {user?.name}
-                </span>
-                <Link to="/medical-records">
-                  <Button variant="outline" size="sm" className="mr-2">
-                    <Icons.MedicalRecords className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Medical Records</span>
-                  </Button>
-                </Link>
-                <Button variant="outline" size="sm" onClick={logout}>
-                  <Icons.Logout className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Logout</span>
-                </Button>
-              </>
+              <span className="text-sm text-muted-foreground">
+                Welcome, {user?.name}
+              </span>
             ) : (
               <Link to="/login">
                 <Button variant="outline" size="sm">

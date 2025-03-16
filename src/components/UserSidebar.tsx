@@ -8,6 +8,8 @@ import Icons from "./Icons";
 import ThemeToggle from "./ThemeToggle";
 import MedicalRecordForm, { MedicalRecord } from "./medical-records/MedicalRecordForm";
 import MedicalRecordsList from "./MedicalRecordsList";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 interface UserSidebarProps {
   history: EmergencyEntry[];
@@ -31,6 +33,7 @@ export function UserSidebar({
   const [isOpen, setIsOpen] = useState(false);
   const [showMedicalForm, setShowMedicalForm] = useState(false);
   const [showMedicalRecords, setShowMedicalRecords] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -86,35 +89,63 @@ export function UserSidebar({
           </div>
         </div>
         
-        <div className="flex flex-col gap-2 p-3 border-b">
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleMedicalForm}
-              className={cn(
-                "flex-1 flex items-center justify-center gap-2",
-                showMedicalForm && "bg-primary text-primary-foreground hover:bg-primary/90"
-              )}
-            >
-              <Icons.MedicalRecords className="h-4 w-4" />
-              {showMedicalForm ? "Hide Form" : "Add Record"}
-            </Button>
+        {isAuthenticated && (
+          <div className="flex flex-col gap-2 p-3 border-b">
+            <div className="flex items-center justify-between">
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleMedicalForm}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2",
+                    showMedicalForm && "bg-primary text-primary-foreground hover:bg-primary/90"
+                  )}
+                >
+                  <Icons.MedicalRecords className="h-4 w-4" />
+                  {showMedicalForm ? "Hide Form" : "Add Record"}
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleMedicalRecords}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2",
+                    showMedicalRecords && "bg-primary text-primary-foreground hover:bg-primary/90"
+                  )}
+                >
+                  <Icons.FileText className="h-4 w-4" />
+                  {showMedicalRecords ? "Hide Records" : "View Records"}
+                </Button>
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={logout}
+                className="flex items-center justify-center gap-1"
+              >
+                <Icons.Logout className="h-4 w-4" />
+              </Button>
+            </div>
             
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleMedicalRecords}
-              className={cn(
-                "flex-1 flex items-center justify-center gap-2",
-                showMedicalRecords && "bg-primary text-primary-foreground hover:bg-primary/90"
-              )}
-            >
-              <Icons.FileText className="h-4 w-4" />
-              {showMedicalRecords ? "Hide Records" : "View Records"}
-            </Button>
+            {isAuthenticated && !showMedicalForm && !showMedicalRecords && (
+              <div className="flex mt-2">
+                <Link to="/medical-records" className="w-full">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <Icons.MedicalRecords className="h-4 w-4" />
+                    Medical Records Portal
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
-        </div>
+        )}
         
         {showMedicalForm && (
           <MedicalRecordForm 
