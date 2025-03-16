@@ -5,6 +5,8 @@ import {
   ChevronDown,
   ChevronRight, 
   Database, 
+  LogOut,
+  Loader2,
   Menu,
   Moon, 
   RotateCcw, 
@@ -32,7 +34,9 @@ export const Icons = {
   MedicalRecords: ClipboardList,
   FileText: FileText,
   Trash: Trash2,
-  Edit: PenLine
+  Edit: PenLine,
+  Logout: LogOut,   // Added for Index.tsx
+  Spinner: Loader2  // Added for Login.tsx and Register.tsx
 };
 
 export default Icons;
