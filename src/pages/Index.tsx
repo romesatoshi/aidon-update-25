@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import EmergencyInput from "@/components/EmergencyInput";
@@ -29,8 +28,8 @@ const Index = () => {
       const guidanceText = await requestGuidance(text);
       setGuidance(guidanceText);
       
-      // Add to history
-      addEmergencyEntry(text, guidanceText);
+      const emergencyTitle = text.split('\n')[0];
+      addEmergencyEntry(emergencyTitle, guidanceText);
       
     } catch (error) {
       console.error("Error getting guidance:", error);

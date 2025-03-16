@@ -5,6 +5,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import useSpeechRecognition from "@/hooks/useSpeechRecognition";
 import Icons from "./Icons";
+import { 
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter
+} from "@/components/ui/drawer";
+import { FormField } from "./medical-records/FormField";
 
 interface EmergencyInputProps {
   onSubmit: (text: string) => void;
@@ -12,8 +20,58 @@ interface EmergencyInputProps {
   className?: string;
 }
 
+// Common emergency types and their follow-up questions
+const followUpQuestions = {
+  "unconscious": [
+    "Is the person breathing?",
+    "Did you see what happened?",
+    "How long have they been unconscious?",
+    "Are they responding to voice or touch at all?"
+  ],
+  "fall": [
+    "Is there any visible bleeding?", 
+    "Can the person move all limbs?",
+    "Did they hit their head?",
+    "Is there any deformity or swelling?"
+  ],
+  "chest pain": [
+    "Is the pain radiating to arms, jaw, or back?",
+    "Is the person experiencing shortness of breath?",
+    "Is the person sweating or nauseous?",
+    "Does the pain increase with movement or breathing?"
+  ],
+  "choking": [
+    "Can the person speak or cough?",
+    "Is the person still conscious?",
+    "What were they eating/doing when choking started?",
+    "Has any foreign object been expelled?"
+  ],
+  "bleeding": [
+    "Where is the bleeding coming from?",
+    "Is the bleeding pulsating or steady?",
+    "How much blood has been lost?",
+    "Is there any foreign object in the wound?"
+  ],
+  "burn": [
+    "What caused the burn?",
+    "What is the size of the burned area?",
+    "What does the burn look like (red, blistered, charred)?",
+    "Has the burn been cooled with running water?"
+  ],
+  "default": [
+    "Is the person conscious and breathing normally?",
+    "When did the symptoms start?",
+    "Has this happened before?",
+    "Are there any known medical conditions?"
+  ]
+};
+
 export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInputProps) {
   const [text, setText] = useState("");
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [currentQuestions, setCurrentQuestions] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  
   const { 
     isListening, 
     transcript, 
@@ -24,7 +82,6 @@ export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInpu
   } = useSpeechRecognition({
     onResult: (result) => {
       setText(result);
-      handleSubmit();
     }
   });
 
@@ -36,13 +93,63 @@ export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInpu
 
   const handleSubmit = () => {
     if (text.trim() && !isLoading) {
-      onSubmit(text.trim());
+      // Check if we should show follow-up questions
+      const shouldShowFollowUp = determineFollowUpQuestions();
+      
+      if (shouldShowFollowUp) {
+        setIsDrawerOpen(true);
+      } else {
+        submitFinalEmergency();
+      }
     }
+  };
+
+  const determineFollowUpQuestions = () => {
+    // Simple text matching to determine emergency type
+    const lowerText = text.toLowerCase();
+    let questionsToUse = followUpQuestions.default;
+    
+    // Find the most relevant question set
+    for (const [keyword, questions] of Object.entries(followUpQuestions)) {
+      if (keyword !== "default" && lowerText.includes(keyword)) {
+        questionsToUse = questions;
+        break;
+      }
+    }
+    
+    setCurrentQuestions(questionsToUse);
+    return true; // Always show follow-up for better information
   };
 
   const handleReset = () => {
     setText("");
     setTranscript("");
+    setAnswers({});
+  };
+
+  const handleAnswerChange = (question: string, answer: string) => {
+    setAnswers({
+      ...answers,
+      [question]: answer
+    });
+  };
+
+  const submitFinalEmergency = () => {
+    // Combine original text with answers to follow-up questions
+    let finalText = text.trim();
+    
+    if (Object.keys(answers).length > 0) {
+      finalText += "\n\nAdditional Information:";
+      for (const [question, answer] of Object.entries(answers)) {
+        if (answer.trim()) {
+          finalText += `\n- ${question}: ${answer}`;
+        }
+      }
+    }
+    
+    onSubmit(finalText);
+    setIsDrawerOpen(false);
+    setAnswers({});
   };
 
   return (
@@ -102,6 +209,51 @@ export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInpu
           </Button>
         )}
       </div>
+
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DrawerContent className="max-h-[90vh]">
+          <DrawerHeader>
+            <DrawerTitle className="text-center text-lg font-medium">
+              <Icons.Emergency className="inline-block mr-2 h-5 w-5 text-emergency" />
+              Additional Information Needed
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4 space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Please provide more details to help us give you the most accurate first aid guidance:
+            </p>
+            <div className="space-y-4 max-h-[50vh] overflow-y-auto p-1">
+              {currentQuestions.map((question, index) => (
+                <FormField
+                  key={index}
+                  id={`question-${index}`}
+                  label={question}
+                  placeholder="Type your answer here..."
+                  value={answers[question] || ""}
+                  onChange={(e) => handleAnswerChange(question, e.target.value)}
+                  className="border-b pb-3"
+                />
+              ))}
+            </div>
+          </div>
+          <DrawerFooter>
+            <Button 
+              className="bg-emergency hover:bg-emergency-hover text-emergency-foreground"
+              onClick={submitFinalEmergency}
+              disabled={isLoading}
+            >
+              <Icons.Emergency className="mr-2 h-4 w-4" />
+              Get First Aid Guidance Now
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => submitFinalEmergency()}
+            >
+              Skip Additional Information
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }
