@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import EmergencyInput from "@/components/EmergencyInput";
@@ -10,6 +11,7 @@ import { type MedicalRecord } from "@/components/medical-records/MedicalRecordFo
 const Index = () => {
   const [emergency, setEmergency] = useState("");
   const [guidance, setGuidance] = useState("");
+  const [showFollowUp, setShowFollowUp] = useState(false);
   const { toast } = useToast();
   const { 
     data, 
@@ -28,6 +30,9 @@ const Index = () => {
       const guidanceText = await requestGuidance(text);
       setGuidance(guidanceText);
       
+      // After guidance is shown, set showFollowUp to true
+      setShowFollowUp(true);
+      
       const emergencyTitle = text.split('\n')[0];
       addEmergencyEntry(emergencyTitle, guidanceText);
       
@@ -44,11 +49,41 @@ const Index = () => {
   const handleReset = () => {
     setEmergency("");
     setGuidance("");
+    setShowFollowUp(false);
+  };
+
+  const handleFollowUpSubmit = (additionalInfo: Record<string, string>) => {
+    // Update the emergency history with the additional information
+    if (Object.keys(additionalInfo).length > 0) {
+      let updatedEmergency = emergency;
+      
+      updatedEmergency += "\n\nAdditional Information:";
+      for (const [question, answer] of Object.entries(additionalInfo)) {
+        if (answer.trim()) {
+          updatedEmergency += `\n- ${question}: ${answer}`;
+        }
+      }
+      
+      setEmergency(updatedEmergency);
+      
+      // Could request updated guidance here if needed
+      // For now, just update the emergency entry
+      const emergencyTitle = emergency.split('\n')[0];
+      addEmergencyEntry(emergencyTitle, guidance, additionalInfo);
+      
+      toast({
+        title: "Information updated",
+        description: "The additional details have been saved.",
+      });
+    }
+    
+    setShowFollowUp(false);
   };
 
   const handleSelectHistoryEntry = (entry: any) => {
     setEmergency(entry.emergency);
     setGuidance(entry.guidance);
+    setShowFollowUp(false);
     
     toast({
       title: "Previous search loaded",
@@ -106,6 +141,9 @@ const Index = () => {
           onSubmit={handleEmergencySubmit} 
           isLoading={loading} 
           className="mb-6"
+          showFollowUp={showFollowUp}
+          emergencyText={emergency}
+          onFollowUpSubmit={handleFollowUpSubmit}
         />
         
         {guidance && (

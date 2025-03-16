@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { mockUserHistory } from '../lib/mockData';
 
@@ -7,6 +6,7 @@ export interface EmergencyEntry {
   timestamp: string;
   emergency: string;
   guidance: string;
+  additionalInfo?: Record<string, string>;
 }
 
 export interface EmergencyData {
@@ -54,12 +54,17 @@ export function useEmergencyData() {
     }
   }, []);
 
-  const addEmergencyEntry = (emergency: string, guidance: string) => {
+  const addEmergencyEntry = (
+    emergency: string, 
+    guidance: string, 
+    additionalInfo?: Record<string, string>
+  ) => {
     const newEntry: EmergencyEntry = {
       id: Date.now().toString(),
       timestamp: new Date().toISOString(),
       emergency,
-      guidance
+      guidance,
+      additionalInfo
     };
     
     setData(prev => ({

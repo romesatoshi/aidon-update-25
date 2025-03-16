@@ -16,8 +16,11 @@ import { FormField } from "./medical-records/FormField";
 
 interface EmergencyInputProps {
   onSubmit: (text: string) => void;
+  onFollowUpSubmit?: (answers: Record<string, string>) => void;
   isLoading: boolean;
   className?: string;
+  showFollowUp?: boolean;
+  emergencyText?: string;
 }
 
 // Common emergency types and their follow-up questions
@@ -66,7 +69,14 @@ const followUpQuestions = {
   ]
 };
 
-export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInputProps) {
+export function EmergencyInput({ 
+  onSubmit, 
+  onFollowUpSubmit,
+  isLoading, 
+  className,
+  showFollowUp = false,
+  emergencyText = ""
+}: EmergencyInputProps) {
   const [text, setText] = useState("");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [currentQuestions, setCurrentQuestions] = useState<string[]>([]);
@@ -85,6 +95,16 @@ export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInpu
     }
   });
 
+  // Effect to set drawer open state when showFollowUp changes
+  useEffect(() => {
+    if (showFollowUp) {
+      determineFollowUpQuestions(emergencyText);
+      setIsDrawerOpen(true);
+    } else {
+      setIsDrawerOpen(false);
+    }
+  }, [showFollowUp, emergencyText]);
+
   useEffect(() => {
     if (transcript) {
       setText(transcript);
@@ -93,20 +113,13 @@ export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInpu
 
   const handleSubmit = () => {
     if (text.trim() && !isLoading) {
-      // Check if we should show follow-up questions
-      const shouldShowFollowUp = determineFollowUpQuestions();
-      
-      if (shouldShowFollowUp) {
-        setIsDrawerOpen(true);
-      } else {
-        submitFinalEmergency();
-      }
+      onSubmit(text.trim());
     }
   };
 
-  const determineFollowUpQuestions = () => {
+  const determineFollowUpQuestions = (inputText: string) => {
     // Simple text matching to determine emergency type
-    const lowerText = text.toLowerCase();
+    const lowerText = inputText.toLowerCase();
     let questionsToUse = followUpQuestions.default;
     
     // Find the most relevant question set
@@ -118,7 +131,7 @@ export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInpu
     }
     
     setCurrentQuestions(questionsToUse);
-    return true; // Always show follow-up for better information
+    return true;
   };
 
   const handleReset = () => {
@@ -134,93 +147,94 @@ export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInpu
     });
   };
 
-  const submitFinalEmergency = () => {
-    // Combine original text with answers to follow-up questions
-    let finalText = text.trim();
-    
-    if (Object.keys(answers).length > 0) {
-      finalText += "\n\nAdditional Information:";
-      for (const [question, answer] of Object.entries(answers)) {
-        if (answer.trim()) {
-          finalText += `\n- ${question}: ${answer}`;
-        }
-      }
+  const handleFollowUpSubmit = () => {
+    if (onFollowUpSubmit) {
+      onFollowUpSubmit(answers);
     }
-    
-    onSubmit(finalText);
     setIsDrawerOpen(false);
     setAnswers({});
   };
 
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
+    if (onFollowUpSubmit) {
+      onFollowUpSubmit({}); // Submit empty answers if user closes without answering
+    }
+  };
+
   return (
     <div className={cn("space-y-3", className)}>
-      <div className="relative">
-        <Textarea
-          placeholder="Describe the emergency specifically (e.g., 'person unconscious after fall' or 'child choking on food')"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="min-h-[100px] p-4 resize-none transition-all focus-visible:ring-primary"
-          disabled={isLoading || isListening}
-        />
-        
-        {(text || isListening) && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="absolute top-2 right-2 opacity-70 hover:opacity-100 transition-opacity"
-            onClick={handleReset}
-            disabled={isLoading}
-            aria-label="Clear input"
-          >
-            <Icons.Close className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
-      
-      <div className="flex gap-3">
-        <Button
-          className={cn(
-            "flex-1 bg-emergency hover:bg-emergency-hover text-emergency-foreground",
-            isLoading && "animate-pulse-subtle"
-          )}
-          onClick={handleSubmit}
-          disabled={isLoading || !text.trim()}
-        >
-          <Icons.Emergency className="mr-2 h-4 w-4" />
-          {isLoading ? "Getting guidance..." : "Get Specific First Aid Steps"}
-        </Button>
-        
-        {isSupported && (
-          <Button
-            variant={isListening ? "default" : "outline"}
-            className={cn(
-              "relative",
-              isListening && "bg-primary text-primary-foreground"
+      {!showFollowUp && (
+        <>
+          <div className="relative">
+            <Textarea
+              placeholder="Describe the emergency specifically (e.g., 'person unconscious after fall' or 'child choking on food')"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              className="min-h-[100px] p-4 resize-none transition-all focus-visible:ring-primary"
+              disabled={isLoading || isListening}
+            />
+            
+            {(text || isListening) && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-2 right-2 opacity-70 hover:opacity-100 transition-opacity"
+                onClick={handleReset}
+                disabled={isLoading}
+                aria-label="Clear input"
+              >
+                <Icons.Close className="h-4 w-4" />
+              </Button>
             )}
-            onClick={isListening ? stopListening : startListening}
-            disabled={isLoading}
-          >
-            <Icons.Voice className="h-4 w-4" />
-            {isListening && (
-              <span className="absolute inset-0 flex items-center justify-center">
-                <span className="animate-ripple absolute inline-flex h-full w-full rounded-full bg-primary opacity-50"></span>
-              </span>
+          </div>
+          
+          <div className="flex gap-3">
+            <Button
+              className={cn(
+                "flex-1 bg-emergency hover:bg-emergency-hover text-emergency-foreground",
+                isLoading && "animate-pulse-subtle"
+              )}
+              onClick={handleSubmit}
+              disabled={isLoading || !text.trim()}
+            >
+              <Icons.Emergency className="mr-2 h-4 w-4" />
+              {isLoading ? "Getting guidance..." : "Get Specific First Aid Steps"}
+            </Button>
+            
+            {isSupported && (
+              <Button
+                variant={isListening ? "default" : "outline"}
+                className={cn(
+                  "relative",
+                  isListening && "bg-primary text-primary-foreground"
+                )}
+                onClick={isListening ? stopListening : startListening}
+                disabled={isLoading}
+              >
+                <Icons.Voice className="h-4 w-4" />
+                {isListening && (
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <span className="animate-ripple absolute inline-flex h-full w-full rounded-full bg-primary opacity-50"></span>
+                  </span>
+                )}
+              </Button>
             )}
-          </Button>
-        )}
-      </div>
+          </div>
+        </>
+      )}
 
-      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+      <Drawer open={isDrawerOpen} onOpenChange={handleCloseDrawer}>
         <DrawerContent className="max-h-[90vh]">
           <DrawerHeader>
             <DrawerTitle className="text-center text-lg font-medium">
               <Icons.Emergency className="inline-block mr-2 h-5 w-5 text-emergency" />
-              Additional Information Needed
+              Can You Provide More Details?
             </DrawerTitle>
           </DrawerHeader>
           <div className="p-4 space-y-4">
             <p className="text-sm text-muted-foreground">
-              Please provide more details to help us give you the most accurate first aid guidance:
+              Answering these questions will help us provide more accurate guidance for this emergency:
             </p>
             <div className="space-y-4 max-h-[50vh] overflow-y-auto p-1">
               {currentQuestions.map((question, index) => (
@@ -239,17 +253,17 @@ export function EmergencyInput({ onSubmit, isLoading, className }: EmergencyInpu
           <DrawerFooter>
             <Button 
               className="bg-emergency hover:bg-emergency-hover text-emergency-foreground"
-              onClick={submitFinalEmergency}
+              onClick={handleFollowUpSubmit}
               disabled={isLoading}
             >
               <Icons.Emergency className="mr-2 h-4 w-4" />
-              Get First Aid Guidance Now
+              Submit Additional Information
             </Button>
             <Button 
               variant="outline" 
-              onClick={() => submitFinalEmergency()}
+              onClick={handleCloseDrawer}
             >
-              Skip Additional Information
+              Skip Questions
             </Button>
           </DrawerFooter>
         </DrawerContent>
