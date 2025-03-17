@@ -20,14 +20,19 @@ import {
   X,
   AlertTriangle,
   Mic,
+  Check,
+  Clipboard,
+  LogIn
 } from "lucide-react";
 
 // Create custom icons or rename existing ones here
 const Icons = {
   arrowLeft: ArrowLeft,
   back: ArrowLeft,
+  check: Check,
   chevronDown: ChevronDown,
   chevronRight: ChevronRight,
+  clipboard: Clipboard,
   clipboardList: ClipboardList,
   close: X,
   database: Database, 
@@ -35,6 +40,7 @@ const Icons = {
   emergency: AlertTriangle, // Using AlertTriangle as a substitute for Emergency
   fileText: FileText,
   loader: Loader2,
+  login: LogIn,
   logout: LogOut,
   medicalRecords: ClipboardList, // Using ClipboardList as a substitute for MedicalRecords
   menu: Menu,

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Icons from "./Icons";
-import { type MedicalRecord } from "./medical-records/MedicalRecordForm";
+import { type MedicalRecord } from "./medical-records/types";
 import MedicalRecordForm from "./medical-records/MedicalRecordForm";
 
 interface MedicalRecordsListProps {
