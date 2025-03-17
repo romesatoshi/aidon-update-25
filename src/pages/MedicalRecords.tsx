@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,13 @@ const MedicalRecords = () => {
       title: "Medical record deleted",
       description: "The medical record has been deleted successfully.",
     });
+  };
+
+  // Adding the onClose handler function for MedicalRecordsList
+  const handleClose = () => {
+    // Since we're on the main page, there's nothing to close,
+    // but we need to provide this function to satisfy the component props
+    console.log("Medical records list closed");
   };
 
   return (
@@ -87,7 +95,8 @@ const MedicalRecords = () => {
                 <MedicalRecordsList 
                   records={medicalRecords} 
                   onEdit={handleEdit} 
-                  onDelete={handleDelete} 
+                  onDelete={handleDelete}
+                  onClose={handleClose} 
                 />
               ) : (
                 <div className="p-8 text-center">
