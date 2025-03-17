@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEmergencyData } from "@/hooks/useEmergencyData";
 import Icons from "@/components/Icons";
 import MedicalRecordsList from "@/components/MedicalRecordsList";
+import MedicalRecordForm from "@/components/medical-records/MedicalRecordForm";
 
 const MedicalRecords = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -21,6 +22,7 @@ const MedicalRecords = () => {
   const [medicalRecords, setMedicalRecords] = useState(data.medicalRecords || []);
   const [isEditing, setIsEditing] = useState(false);
   const [recordToEdit, setRecordToEdit] = useState(null);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
     if (data && data.medicalRecords) {
@@ -28,12 +30,13 @@ const MedicalRecords = () => {
     }
   }, [data]);
 
-  const handleEdit = (record: any) => {
+  const handleEdit = (record) => {
     setIsEditing(true);
     setRecordToEdit(record);
+    setShowAddForm(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id) => {
     deleteMedicalRecord(id);
     toast({
       title: "Medical record deleted",
@@ -46,6 +49,35 @@ const MedicalRecords = () => {
     // Since we're on the main page, there's nothing to close,
     // but we need to provide this function to satisfy the component props
     console.log("Medical records list closed");
+  };
+
+  const handleAddRecord = () => {
+    setIsEditing(false);
+    setRecordToEdit(null);
+    setShowAddForm(true);
+  };
+
+  const handleFormClose = () => {
+    setShowAddForm(false);
+    setIsEditing(false);
+    setRecordToEdit(null);
+  };
+
+  const handleSaveRecord = (record) => {
+    if (isEditing) {
+      editMedicalRecord(record);
+      toast({
+        title: "Medical record updated",
+        description: "The medical record has been updated successfully.",
+      });
+    } else {
+      addMedicalRecord(record);
+      toast({
+        title: "Medical record created",
+        description: "The medical record has been created successfully.",
+      });
+    }
+    setShowAddForm(false);
   };
 
   return (
@@ -85,9 +117,23 @@ const MedicalRecords = () => {
                   <Icons.medicalRecords className="mr-2 h-5 w-5" />
                   Your Medical Records
                 </h2>
+                <Button 
+                  onClick={handleAddRecord}
+                  size="sm"
+                  className="flex items-center"
+                >
+                  <Icons.plus className="mr-1 h-4 w-4" />
+                  Add Record
+                </Button>
               </div>
               
-              {isLoading ? (
+              {showAddForm ? (
+                <MedicalRecordForm
+                  onClose={handleFormClose}
+                  onSave={handleSaveRecord}
+                  initialData={isEditing ? recordToEdit : undefined}
+                />
+              ) : isLoading ? (
                 <div className="flex justify-center items-center p-8">
                   <Icons.loader className="h-8 w-8 animate-spin" />
                 </div>
@@ -101,6 +147,10 @@ const MedicalRecords = () => {
               ) : (
                 <div className="p-8 text-center">
                   <p className="text-muted-foreground mb-4">You don't have any medical records yet.</p>
+                  <Button onClick={handleAddRecord} className="flex items-center mx-auto">
+                    <Icons.plus className="mr-1 h-4 w-4" />
+                    Create Medical Record
+                  </Button>
                 </div>
               )}
             </div>
