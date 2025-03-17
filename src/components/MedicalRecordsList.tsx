@@ -67,7 +67,7 @@ export function MedicalRecordsList({
     <div className="p-4 border-t">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-medium flex items-center">
-          <Icons.FileText className="mr-2 h-4 w-4" />
+          <Icons.fileText className="mr-2 h-4 w-4" />
           Saved Medical Records
         </h3>
         <Button 
@@ -76,7 +76,7 @@ export function MedicalRecordsList({
           onClick={onClose}
           aria-label="Close records list"
         >
-          <Icons.Close className="h-4 w-4" />
+          <Icons.close className="h-4 w-4" />
         </Button>
       </div>
       
@@ -106,7 +106,7 @@ export function MedicalRecordsList({
                       className="h-8 w-8"
                       aria-label="Edit record"
                     >
-                      <Icons.Edit className="h-4 w-4" />
+                      <Icons.edit className="h-4 w-4" />
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -115,7 +115,7 @@ export function MedicalRecordsList({
                       className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                       aria-label="Delete record"
                     >
-                      <Icons.Trash className="h-4 w-4" />
+                      <Icons.trash className="h-4 w-4" />
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -124,9 +124,9 @@ export function MedicalRecordsList({
                       className="h-8 w-8"
                     >
                       {expandedRecord === record.id ? (
-                        <Icons.ChevronDown className="h-4 w-4" />
+                        <Icons.chevronDown className="h-4 w-4" />
                       ) : (
-                        <Icons.ChevronRight className="h-4 w-4" />
+                        <Icons.chevronRight className="h-4 w-4" />
                       )}
                     </Button>
                   </div>

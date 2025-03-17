@@ -1,3 +1,4 @@
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -9,14 +10,13 @@ import {
   CreditCard,
   Database,
   Edit,
-  Emergency,
   FileText,
   Github,
   HelpCircle,
   Layers,
   Loader2,
   Lock,
-  Logout,
+  LogOut,
   Mail,
   Menu,
   MessageSquare,
@@ -40,6 +40,9 @@ import {
   Bell,
   Book,
   ClipboardList,
+  Mic,
+  QrCode,
+  FileText2,
   LucideIcon,
 } from "lucide-react"
 
@@ -54,14 +57,14 @@ const Icons = {
   creditCard: CreditCard,
   database: Database,
   edit: Edit,
-  emergency: Emergency,
+  emergency: FileText2, // Using FileText2 as a substitute for Emergency since it doesn't exist
   fileText: FileText,
   github: Github,
   helpCircle: HelpCircle,
   layers: Layers,
   loader2: Loader2,
   lock: Lock,
-  logout: Logout,
+  logout: LogOut,
   mail: Mail,
   menu: Menu,
   messageSquare: MessageSquare,
@@ -86,11 +89,11 @@ const Icons = {
   bell: Bell,
   book: Book,
   clipboardList: ClipboardList,
+  voice: Mic, // Using Mic for Voice
+  reset: RotateCw, // Using RotateCw for Reset
+  medicalRecords: FileText, // Using FileText for MedicalRecords
+  spinner: Loader2, // Using Loader2 for Spinner
+  qrCode: QrCode,
 }
 
 export default Icons;
-
-import * as lucide from "lucide-react";
-
-// Add the QrCode icon
-export const QrCode = lucide.QrCode;

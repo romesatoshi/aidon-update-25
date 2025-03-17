@@ -34,7 +34,7 @@ const Login = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-2">
-            <Icons.Emergency className="h-10 w-10 text-emergency" />
+            <Icons.emergency className="h-10 w-10 text-emergency" />
           </div>
           <CardTitle className="text-2xl">Welcome back</CardTitle>
           <CardDescription>
@@ -75,7 +75,7 @@ const Login = () => {
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
-                  <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   Please wait
                 </>
               ) : (

@@ -59,7 +59,7 @@ export function UserSidebar({
       >
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="font-semibold flex items-center">
-            <Icons.Database className="mr-2 h-4 w-4" />
+            <Icons.database className="mr-2 h-4 w-4" />
             Search History
           </h2>
           <div className="flex items-center gap-2">
@@ -70,7 +70,7 @@ export function UserSidebar({
               onClick={() => setIsOpen(false)}
               aria-label="Close sidebar"
             >
-              <Icons.Close className="h-4 w-4" />
+              <Icons.close className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -90,7 +90,7 @@ export function UserSidebar({
                 onClick={logout}
                 className="flex items-center justify-center gap-1"
               >
-                <Icons.Logout className="h-4 w-4" />
+                <Icons.logout className="h-4 w-4" />
               </Button>
             </div>
             
@@ -102,7 +102,7 @@ export function UserSidebar({
                     size="sm"
                     className="w-full flex items-center justify-center gap-2"
                   >
-                    <Icons.MedicalRecords className="h-4 w-4" />
+                    <Icons.medicalRecords className="h-4 w-4" />
                     Medical Records Portal
                   </Button>
                 </Link>
@@ -147,7 +147,7 @@ export function UserSidebar({
           onClick={() => setIsOpen(true)}
           aria-label="Open history sidebar"
         >
-          <Icons.Menu className="h-5 w-5" />
+          <Icons.menu className="h-5 w-5" />
         </Button>
       )}
     </>

@@ -184,7 +184,7 @@ export function EmergencyInput({
                 disabled={isLoading}
                 aria-label="Clear input"
               >
-                <Icons.Close className="h-4 w-4" />
+                <Icons.close className="h-4 w-4" />
               </Button>
             )}
           </div>
@@ -198,7 +198,7 @@ export function EmergencyInput({
               onClick={handleSubmit}
               disabled={isLoading || !text.trim()}
             >
-              <Icons.Emergency className="mr-2 h-4 w-4" />
+              <Icons.emergency className="mr-2 h-4 w-4" />
               {isLoading ? "Getting guidance..." : "Get Specific First Aid Steps"}
             </Button>
             
@@ -212,7 +212,7 @@ export function EmergencyInput({
                 onClick={isListening ? stopListening : startListening}
                 disabled={isLoading}
               >
-                <Icons.Voice className="h-4 w-4" />
+                <Icons.voice className="h-4 w-4" />
                 {isListening && (
                   <span className="absolute inset-0 flex items-center justify-center">
                     <span className="animate-ripple absolute inline-flex h-full w-full rounded-full bg-primary opacity-50"></span>
@@ -228,7 +228,7 @@ export function EmergencyInput({
         <DrawerContent className="max-h-[90vh]">
           <DrawerHeader>
             <DrawerTitle className="text-center text-lg font-medium">
-              <Icons.Emergency className="inline-block mr-2 h-5 w-5 text-emergency" />
+              <Icons.emergency className="inline-block mr-2 h-5 w-5 text-emergency" />
               Can You Provide More Details?
             </DrawerTitle>
           </DrawerHeader>
@@ -256,7 +256,7 @@ export function EmergencyInput({
               onClick={handleFollowUpSubmit}
               disabled={isLoading}
             >
-              <Icons.Emergency className="mr-2 h-4 w-4" />
+              <Icons.emergency className="mr-2 h-4 w-4" />
               Submit Additional Information
             </Button>
             <Button 

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -112,7 +113,7 @@ const Index = () => {
       <div className="container max-w-3xl mx-auto p-4 md:p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
-            <Icons.Emergency className="mr-2 h-6 w-6 text-emergency" />
+            <Icons.emergency className="mr-2 h-6 w-6 text-emergency" />
             Medical Guidance Assistant
           </h1>
           <div className="flex items-center gap-2">

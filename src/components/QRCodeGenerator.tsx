@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
@@ -13,10 +12,9 @@ interface QRCodeGeneratorProps {
 
 export function QRCodeGenerator({ medicalRecord }: QRCodeGeneratorProps) {
   const [qrValue, setQrValue] = useState<string>("");
-  
+
   useEffect(() => {
     if (medicalRecord) {
-      // Create a simplified version of the medical record without notes
       const qrData = {
         name: medicalRecord.fullName,
         bloodGroup: medicalRecord.bloodGroup,
@@ -41,7 +39,7 @@ export function QRCodeGenerator({ medicalRecord }: QRCodeGeneratorProps) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
-          <Icons.QrCode className="h-4 w-4" />
+          <Icons.qrCode className="h-4 w-4" />
           Emergency QR Code
         </Button>
       </DialogTrigger>

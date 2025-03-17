@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -62,7 +61,7 @@ const MedicalRecords = () => {
       <div className="container max-w-3xl mx-auto p-4 md:p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
-            <Icons.MedicalRecords className="mr-2 h-6 w-6 text-primary" />
+            <Icons.medicalRecords className="mr-2 h-6 w-6 text-primary" />
             Medical Records Portal
           </h1>
           <div className="flex items-center gap-2">
@@ -70,11 +69,11 @@ const MedicalRecords = () => {
               Welcome, {user?.name}
             </span>
             <Button variant="outline" size="sm" onClick={goToHome} className="mr-2">
-              <Icons.Back className="h-4 w-4 mr-2" />
+              <Icons.back className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Home</span>
             </Button>
             <Button variant="outline" size="sm" onClick={logout}>
-              <Icons.Logout className="h-4 w-4 mr-2" />
+              <Icons.logout className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
@@ -96,7 +95,7 @@ const MedicalRecords = () => {
             <Button 
               onClick={() => setShowForm(true)}
             >
-              <Icons.MedicalRecords className="mr-2 h-4 w-4" />
+              <Icons.medicalRecords className="mr-2 h-4 w-4" />
               Add New Medical Record
             </Button>
             

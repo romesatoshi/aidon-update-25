@@ -28,7 +28,7 @@ export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDispla
     <Card className={cn("animate-scale-in border-l-4 border-l-primary", className)}>
       <CardHeader className="pb-2">
         <CardTitle className="text-xl flex items-center">
-          <Icons.Emergency className="mr-2 h-5 w-5 text-emergency" />
+          <Icons.emergency className="mr-2 h-5 w-5 text-emergency" />
           Emergency Guidance
         </CardTitle>
       </CardHeader>
@@ -47,7 +47,7 @@ export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDispla
               onClick={handleSpeak}
               className={cn(isSpeaking && "bg-primary/10")}
             >
-              <Icons.Voice className="mr-1 h-4 w-4" />
+              <Icons.voice className="mr-1 h-4 w-4" />
               {isSpeaking ? "Stop Speaking" : "Speak Instructions"}
             </Button>
           )}
@@ -56,7 +56,7 @@ export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDispla
             size="sm" 
             onClick={onReset}
           >
-            <Icons.Reset className="mr-1 h-4 w-4" />
+            <Icons.reset className="mr-1 h-4 w-4" />
             New Search
           </Button>
         </div>

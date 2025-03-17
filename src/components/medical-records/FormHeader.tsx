@@ -17,7 +17,7 @@ export function FormHeader({ onClose, title = "Add Medical Record" }: FormHeader
         onClick={onClose}
         aria-label="Close form"
       >
-        <Icons.Close className="h-4 w-4" />
+        <Icons.close className="h-4 w-4" />
       </Button>
     </div>
   );
