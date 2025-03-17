@@ -5,6 +5,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Icons from "./Icons";
 import { type MedicalRecord } from "./medical-records/types";
 import MedicalRecordForm from "./medical-records/MedicalRecordForm";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface MedicalRecordsListProps {
   records: MedicalRecord[];
@@ -21,6 +32,8 @@ export function MedicalRecordsList({
 }: MedicalRecordsListProps) {
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null);
   const [editingRecord, setEditingRecord] = useState<MedicalRecord | null>(null);
+  const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const toggleRecordDetails = (id: string) => {
     if (expandedRecord === id) {
@@ -39,6 +52,25 @@ export function MedicalRecordsList({
       onEdit(updatedRecord);
     }
     setEditingRecord(null);
+  };
+
+  const confirmDelete = (id: string) => {
+    setRecordToDelete(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (recordToDelete && onDelete) {
+      onDelete(recordToDelete);
+      toast({
+        title: "Record deleted",
+        description: "The medical record has been permanently removed.",
+      });
+    }
+    setRecordToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setRecordToDelete(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -111,7 +143,7 @@ export function MedicalRecordsList({
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      onClick={() => onDelete && onDelete(record.id)}
+                      onClick={() => confirmDelete(record.id)}
                       className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                       aria-label="Delete record"
                     >
@@ -163,6 +195,30 @@ export function MedicalRecordsList({
           </div>
         )}
       </ScrollArea>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={recordToDelete !== null} onOpenChange={(isOpen) => !isOpen && setRecordToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Icons.alertTriangle className="h-5 w-5 text-destructive" />
+              Confirm Deletion
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this medical record? This action cannot be undone and the information will be permanently lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
