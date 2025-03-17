@@ -9,9 +9,19 @@ export interface FormData {
   age: string;
   sex: string;
   maritalStatus: string;
+  dateOfBirth: string;
+  weight: string;
+  primaryPhysician: string;
+  healthInsurance: string;
+  advanceDirectives: string;
+  organDonor: string;
+  language: string;
+  address: string;
+  recentHospitalizations: string;
   allergies: string;
   conditions: string;
   medications: string;
+  medicationDosage: string;
   emergencyContact: string;
   emergencyPhone: string;
   notes: string;
@@ -24,9 +34,19 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     age: "",
     sex: "",
     maritalStatus: "",
+    dateOfBirth: "",
+    weight: "",
+    primaryPhysician: "",
+    healthInsurance: "",
+    advanceDirectives: "",
+    organDonor: "",
+    language: "",
+    address: "",
+    recentHospitalizations: "",
     allergies: "",
     conditions: "",
     medications: "",
+    medicationDosage: "",
     emergencyContact: "",
     emergencyPhone: "",
     notes: ""
@@ -43,9 +63,19 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
         age: initialData.age || "",
         sex: initialData.sex || "",
         maritalStatus: initialData.maritalStatus || "",
+        dateOfBirth: initialData.dateOfBirth || "",
+        weight: initialData.weight || "",
+        primaryPhysician: initialData.primaryPhysician || "",
+        healthInsurance: initialData.healthInsurance || "",
+        advanceDirectives: initialData.advanceDirectives || "",
+        organDonor: initialData.organDonor || "",
+        language: initialData.language || "",
+        address: initialData.address || "",
+        recentHospitalizations: initialData.recentHospitalizations || "",
         allergies: initialData.allergies || "",
         conditions: initialData.conditions || "",
         medications: initialData.medications || "",
+        medicationDosage: initialData.medicationDosage || "",
         emergencyContact: initialData.emergencyContact || "",
         emergencyPhone: initialData.emergencyPhone || "",
         notes: initialData.notes || ""

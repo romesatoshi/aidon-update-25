@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/ui/button';
@@ -27,12 +28,22 @@ Name: ${medicalRecord.fullName}
 Blood Group: ${medicalRecord.bloodGroup}
 Age: ${medicalRecord.age}
 Sex: ${medicalRecord.sex}
-Marital Status: ${medicalRecord.maritalStatus}
-Allergies: ${medicalRecord.allergies}
-Medical Conditions: ${medicalRecord.conditions}
-Medications: ${medicalRecord.medications}
-Emergency Contact: ${medicalRecord.emergencyContact}
-Emergency Phone: ${medicalRecord.emergencyPhone}
+Date of Birth: ${medicalRecord.dateOfBirth || "Not provided"}
+Weight: ${medicalRecord.weight || "Not provided"}
+Marital Status: ${medicalRecord.maritalStatus || "Not provided"}
+Address: ${medicalRecord.address || "Not provided"}
+Primary Language: ${medicalRecord.language || "Not provided"}
+Allergies: ${medicalRecord.allergies || "None reported"}
+Medical Conditions: ${medicalRecord.conditions || "None reported"}
+Medications: ${medicalRecord.medications || "None reported"}
+Medication Dosage: ${medicalRecord.medicationDosage || "Not provided"}
+Recent Hospitalizations: ${medicalRecord.recentHospitalizations || "None reported"}
+Primary Physician: ${medicalRecord.primaryPhysician || "Not provided"}
+Health Insurance: ${medicalRecord.healthInsurance || "Not provided"}
+Advance Directives: ${medicalRecord.advanceDirectives || "Not provided"}
+Organ Donor: ${medicalRecord.organDonor || "Not provided"}
+Emergency Contact: ${medicalRecord.emergencyContact || "Not provided"}
+Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}
 Emergency Code: ${medicalRecord.emergencyCode || "Not available"}`;
 
   // Function to copy text to clipboard

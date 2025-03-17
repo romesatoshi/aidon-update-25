@@ -33,6 +33,40 @@ export function MedicalInfoFields({ formData, handleInputChange }: MedicalInfoFi
         value={formData.medications}
         onChange={handleInputChange}
       />
+      
+      <FormField
+        id="medicationDosage"
+        label="Medication Dosage"
+        placeholder="Dosage information for medications"
+        value={formData.medicationDosage}
+        onChange={handleInputChange}
+        multiline
+      />
+      
+      <FormField
+        id="recentHospitalizations"
+        label="Recent Hospitalizations/Surgeries"
+        placeholder="Hospitalizations or surgeries in the past year"
+        value={formData.recentHospitalizations}
+        onChange={handleInputChange}
+        multiline
+      />
+      
+      <FormField
+        id="primaryPhysician"
+        label="Primary Physician"
+        placeholder="Name and contact details of primary doctor"
+        value={formData.primaryPhysician}
+        onChange={handleInputChange}
+      />
+      
+      <FormField
+        id="healthInsurance"
+        label="Health Insurance Information"
+        placeholder="Provider, policy number, etc."
+        value={formData.healthInsurance}
+        onChange={handleInputChange}
+      />
     </>
   );
 }
