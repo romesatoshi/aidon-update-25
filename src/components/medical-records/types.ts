@@ -12,6 +12,7 @@ export interface MedicalRecord {
   emergencyPhone: string;
   notes: string;
   createdAt: string;
+  emergencyCode?: string;
 }
 
 export interface MedicalRecordFormProps { 

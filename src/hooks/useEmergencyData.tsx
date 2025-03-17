@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { mockUserHistory } from '../lib/mockData';
+import { MedicalRecord } from '@/components/medical-records/types';
 
 export interface EmergencyEntry {
   id: string;
@@ -13,22 +14,6 @@ export interface EmergencyEntry {
 export interface EmergencyData {
   history: EmergencyEntry[];
   medicalRecords?: MedicalRecord[];
-}
-
-// Matching the MedicalRecord interface defined in MedicalRecordForm.tsx
-interface MedicalRecord {
-  id: string;
-  fullName: string;
-  bloodGroup: string;
-  age: string;
-  sex: string;
-  allergies: string;
-  conditions: string;
-  medications: string;
-  emergencyContact: string;
-  emergencyPhone: string;
-  notes: string;
-  createdAt: string;
 }
 
 export function useEmergencyData() {
@@ -57,6 +42,16 @@ export function useEmergencyData() {
     }
   }, []);
 
+  // Generate a unique emergency code
+  const generateEmergencyCode = (): string => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
+
   const addEmergencyEntry = (
     emergency: string, 
     guidance: string, 
@@ -77,8 +72,14 @@ export function useEmergencyData() {
   };
 
   const addMedicalRecord = (record: MedicalRecord) => {
+    // Ensure each record has a unique emergency code
+    const recordWithCode = {
+      ...record,
+      emergencyCode: record.emergencyCode || generateEmergencyCode()
+    };
+
     setData(prev => {
-      const updatedRecords = [record, ...(prev.medicalRecords || [])];
+      const updatedRecords = [recordWithCode, ...(prev.medicalRecords || [])];
       
       // Save to localStorage
       localStorage.setItem('medicalRecords', JSON.stringify(updatedRecords));
@@ -91,10 +92,16 @@ export function useEmergencyData() {
   };
   
   const editMedicalRecord = (updatedRecord: MedicalRecord) => {
+    // Ensure record has an emergency code
+    const recordWithCode = {
+      ...updatedRecord,
+      emergencyCode: updatedRecord.emergencyCode || generateEmergencyCode()
+    };
+
     setData(prev => {
       const existingRecords = prev.medicalRecords || [];
       const updatedRecords = existingRecords.map(record => 
-        record.id === updatedRecord.id ? updatedRecord : record
+        record.id === recordWithCode.id ? recordWithCode : record
       );
       
       // Save to localStorage
