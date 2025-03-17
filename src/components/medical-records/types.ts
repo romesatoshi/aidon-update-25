@@ -5,6 +5,7 @@ export interface MedicalRecord {
   bloodGroup: string;
   age: string;
   sex: string;
+  maritalStatus: string;
   allergies: string;
   conditions: string;
   medications: string;

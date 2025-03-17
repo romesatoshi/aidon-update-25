@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/ui/button';
@@ -28,6 +27,7 @@ Name: ${medicalRecord.fullName}
 Blood Group: ${medicalRecord.bloodGroup}
 Age: ${medicalRecord.age}
 Sex: ${medicalRecord.sex}
+Marital Status: ${medicalRecord.maritalStatus}
 Allergies: ${medicalRecord.allergies}
 Medical Conditions: ${medicalRecord.conditions}
 Medications: ${medicalRecord.medications}

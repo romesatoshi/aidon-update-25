@@ -8,6 +8,7 @@ export interface FormData {
   bloodGroup: string;
   age: string;
   sex: string;
+  maritalStatus: string;
   allergies: string;
   conditions: string;
   medications: string;
@@ -22,6 +23,7 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     bloodGroup: "",
     age: "",
     sex: "",
+    maritalStatus: "",
     allergies: "",
     conditions: "",
     medications: "",
@@ -40,6 +42,7 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
         bloodGroup: initialData.bloodGroup,
         age: initialData.age || "",
         sex: initialData.sex || "",
+        maritalStatus: initialData.maritalStatus || "",
         allergies: initialData.allergies || "",
         conditions: initialData.conditions || "",
         medications: initialData.medications || "",
