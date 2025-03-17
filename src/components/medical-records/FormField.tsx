@@ -7,7 +7,7 @@ interface FormFieldProps {
   label: string;
   placeholder: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   required?: boolean;
   multiline?: boolean;
   className?: string;

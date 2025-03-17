@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { mockUserHistory } from '../lib/mockData';
 
@@ -14,11 +15,13 @@ export interface EmergencyData {
   medicalRecords?: MedicalRecord[];
 }
 
-// Matching the MedicalRecord interface already defined in MedicalRecordForm.tsx
+// Matching the MedicalRecord interface defined in MedicalRecordForm.tsx
 interface MedicalRecord {
   id: string;
   fullName: string;
   bloodGroup: string;
+  age: string;
+  sex: string;
   allergies: string;
   conditions: string;
   medications: string;
@@ -201,6 +204,18 @@ export function useEmergencyData() {
       if (currentMedicalRecord) {
         const relevantConditions = [];
         
+        // Include age and sex information in personalization if available
+        let demographicInfo = "";
+        if (currentMedicalRecord.age) {
+          demographicInfo += `${currentMedicalRecord.age} years old`;
+        }
+        if (currentMedicalRecord.sex) {
+          demographicInfo += demographicInfo ? `, ${currentMedicalRecord.sex.toLowerCase()}` : currentMedicalRecord.sex;
+        }
+        if (demographicInfo) {
+          personalizedGuidance += `Patient is ${demographicInfo}. `;
+        }
+        
         // Check if the emergency might be related to existing conditions
         if (currentMedicalRecord.conditions && 
             (emergencyText.toLowerCase().includes("chest pain") || 
@@ -217,7 +232,7 @@ export function useEmergencyData() {
         }
         
         if (relevantConditions.length > 0) {
-          personalizedGuidance = `IMPORTANT - Medical record notes ${relevantConditions.join(", ")}. `;
+          personalizedGuidance += `IMPORTANT - Medical record notes ${relevantConditions.join(", ")}. `;
         }
         
         // Add medication and allergy info if relevant to the emergency

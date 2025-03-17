@@ -10,6 +10,8 @@ export interface MedicalRecord {
   id: string;
   fullName: string;
   bloodGroup: string;
+  age: string;
+  sex: string;
   allergies: string;
   conditions: string;
   medications: string;
@@ -29,6 +31,8 @@ export function MedicalRecordForm({ onClose, onSave, initialData }: MedicalRecor
   const [formData, setFormData] = useState({
     fullName: "",
     bloodGroup: "",
+    age: "",
+    sex: "",
     allergies: "",
     conditions: "",
     medications: "",
@@ -45,6 +49,8 @@ export function MedicalRecordForm({ onClose, onSave, initialData }: MedicalRecor
       setFormData({
         fullName: initialData.fullName,
         bloodGroup: initialData.bloodGroup,
+        age: initialData.age || "",
+        sex: initialData.sex || "",
         allergies: initialData.allergies || "",
         conditions: initialData.conditions || "",
         medications: initialData.medications || "",
@@ -55,7 +61,7 @@ export function MedicalRecordForm({ onClose, onSave, initialData }: MedicalRecor
     }
   }, [initialData]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -107,6 +113,8 @@ export function MedicalRecordForm({ onClose, onSave, initialData }: MedicalRecor
         setFormData({
           fullName: "",
           bloodGroup: "",
+          age: "",
+          sex: "",
           allergies: "",
           conditions: "",
           medications: "",
@@ -142,6 +150,33 @@ export function MedicalRecordForm({ onClose, onSave, initialData }: MedicalRecor
           onChange={handleInputChange}
           required
         />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <FormField
+            id="age"
+            label="Age"
+            placeholder="Enter age"
+            value={formData.age}
+            onChange={handleInputChange}
+          />
+          
+          <div className="flex flex-col gap-1">
+            <label htmlFor="sex" className="text-xs font-medium mb-1 block">Sex</label>
+            <select
+              id="sex"
+              name="sex"
+              value={formData.sex}
+              onChange={handleInputChange}
+              className="rounded-md border border-input px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+        </div>
         
         <FormField
           id="bloodGroup"

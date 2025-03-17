@@ -9,6 +9,7 @@ import Icons from "@/components/Icons";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import QRCodeGenerator from "@/components/QRCodeGenerator";
 
 const MedicalRecords = () => {
   const [showForm, setShowForm] = useState(false);
@@ -91,13 +92,18 @@ const MedicalRecords = () => {
             />
           </Card>
         ) : (
-          <Button 
-            onClick={() => setShowForm(true)} 
-            className="mb-6"
-          >
-            <Icons.MedicalRecords className="mr-2 h-4 w-4" />
-            Add New Medical Record
-          </Button>
+          <div className="flex gap-3 mb-6">
+            <Button 
+              onClick={() => setShowForm(true)}
+            >
+              <Icons.MedicalRecords className="mr-2 h-4 w-4" />
+              Add New Medical Record
+            </Button>
+            
+            {data.medicalRecords && data.medicalRecords.length > 0 && (
+              <QRCodeGenerator medicalRecord={data.medicalRecords[0]} />
+            )}
+          </div>
         )}
 
         {data.medicalRecords && data.medicalRecords.length > 0 ? (

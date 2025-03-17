@@ -10,6 +10,7 @@ import MedicalRecordForm, { MedicalRecord } from "./medical-records/MedicalRecor
 import MedicalRecordsList from "./MedicalRecordsList";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
+import QRCodeGenerator from "./QRCodeGenerator";
 
 interface UserSidebarProps {
   history: EmergencyEntry[];
@@ -31,8 +32,6 @@ export function UserSidebar({
   className 
 }: UserSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [showMedicalForm, setShowMedicalForm] = useState(false);
-  const [showMedicalRecords, setShowMedicalRecords] = useState(false);
   const { isAuthenticated, logout } = useAuth();
 
   const formatDate = (dateString: string) => {
@@ -45,20 +44,7 @@ export function UserSidebar({
     }).format(date);
   };
 
-  const toggleMedicalForm = () => {
-    setShowMedicalForm(!showMedicalForm);
-    if (showMedicalRecords) setShowMedicalRecords(false);
-  };
-
-  const toggleMedicalRecords = () => {
-    setShowMedicalRecords(!showMedicalRecords);
-    if (showMedicalForm) setShowMedicalForm(false);
-  };
-
   const calculateContentHeight = () => {
-    if (showMedicalForm || showMedicalRecords) {
-      return "h-[calc(100%-12rem)]";
-    }
     return "h-[calc(100%-8rem)]";
   };
 
@@ -93,31 +79,9 @@ export function UserSidebar({
           <div className="flex flex-col gap-2 p-3 border-b">
             <div className="flex items-center justify-between">
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={toggleMedicalForm}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-2",
-                    showMedicalForm && "bg-primary text-primary-foreground hover:bg-primary/90"
-                  )}
-                >
-                  <Icons.MedicalRecords className="h-4 w-4" />
-                  {showMedicalForm ? "Hide Form" : "Add Record"}
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={toggleMedicalRecords}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-2",
-                    showMedicalRecords && "bg-primary text-primary-foreground hover:bg-primary/90"
-                  )}
-                >
-                  <Icons.FileText className="h-4 w-4" />
-                  {showMedicalRecords ? "Hide Records" : "View Records"}
-                </Button>
+                {medicalRecords && medicalRecords.length > 0 && (
+                  <QRCodeGenerator medicalRecord={medicalRecords[0]} />
+                )}
               </div>
               
               <Button
@@ -130,7 +94,7 @@ export function UserSidebar({
               </Button>
             </div>
             
-            {isAuthenticated && !showMedicalForm && !showMedicalRecords && (
+            {isAuthenticated && (
               <div className="flex mt-2">
                 <Link to="/medical-records" className="w-full">
                   <Button
@@ -145,22 +109,6 @@ export function UserSidebar({
               </div>
             )}
           </div>
-        )}
-        
-        {showMedicalForm && (
-          <MedicalRecordForm 
-            onClose={() => setShowMedicalForm(false)} 
-            onSave={onSaveMedicalRecord}
-          />
-        )}
-        
-        {showMedicalRecords && (
-          <MedicalRecordsList 
-            records={medicalRecords} 
-            onClose={() => setShowMedicalRecords(false)} 
-            onDelete={onDeleteMedicalRecord}
-            onEdit={onEditMedicalRecord}
-          />
         )}
         
         <ScrollArea className={cn("p-4", calculateContentHeight())}>
