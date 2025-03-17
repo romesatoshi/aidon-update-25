@@ -114,17 +114,19 @@ const Index = () => {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
             <Icons.emergency className="mr-2 h-6 w-6 text-emergency" />
-            Medical Guidance Assistant
+            <span className="hidden xs:inline">Medical Guidance Assistant</span>
+            <span className="xs:hidden">Medical Guide</span>
           </h1>
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-muted-foreground hidden sm:block">
                 Welcome, {user?.name}
               </span>
             ) : (
               <Link to="/login">
-                <Button variant="outline" size="sm">
-                  <span>Sign In</span>
+                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                  <Icons.login className="h-4 w-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Sign In</span>
                 </Button>
               </Link>
             )}

@@ -1,16 +1,17 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { EmergencyEntry } from "@/hooks/useEmergencyData";
 import Icons from "./Icons";
 import ThemeToggle from "./ThemeToggle";
-import MedicalRecordForm, { MedicalRecord } from "./medical-records/MedicalRecordForm";
+import MedicalRecordForm from "./medical-records/MedicalRecordForm";
 import MedicalRecordsList from "./MedicalRecordsList";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import QRCodeGenerator from "./QRCodeGenerator";
+import { MedicalRecord } from "./medical-records/types";
 
 interface UserSidebarProps {
   history: EmergencyEntry[];
@@ -33,6 +34,7 @@ export function UserSidebar({
 }: UserSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { isAuthenticated, logout } = useAuth();
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -48,9 +50,28 @@ export function UserSidebar({
     return "h-[calc(100%-8rem)]";
   };
 
+  // Close sidebar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isOpen && 
+          sidebarRef.current && 
+          !sidebarRef.current.contains(event.target as Node) &&
+          // Make sure we don't close the sidebar when clicking the toggle button
+          !(event.target as Element).closest('[aria-label="Open history sidebar"]')) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
     <>
       <div 
+        ref={sidebarRef}
         className={cn(
           "fixed top-0 right-0 h-full w-80 z-50 transform transition-transform duration-300 ease-in-out shadow-lg border-l border-border glassmorphism overflow-hidden",
           isOpen ? "translate-x-0" : "translate-x-full",
