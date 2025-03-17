@@ -15,7 +15,7 @@ const Index = () => {
   const [guidance, setGuidance] = useState("");
   const [showFollowUp, setShowFollowUp] = useState(false);
   const { toast } = useToast();
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { 
     data, 
     loading, 

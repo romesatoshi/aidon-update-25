@@ -103,7 +103,7 @@ export function UserSidebar({
                     className="w-full flex items-center justify-center gap-2"
                   >
                     <Icons.medicalRecords className="h-4 w-4" />
-                    Medical Records Portal
+                    Medical Portal
                   </Button>
                 </Link>
               </div>
