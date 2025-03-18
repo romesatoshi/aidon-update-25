@@ -4,7 +4,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { cn } from "@/lib/utils";
 import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
 import Icons from "./Icons";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 interface GuidanceDisplayProps {
   guidance: string;
@@ -14,7 +13,6 @@ interface GuidanceDisplayProps {
 
 export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDisplayProps) {
   const { isSupported, isSpeaking, speak, cancel } = useSpeechSynthesis();
-  const { t } = useLanguage();
 
   const handleSpeak = () => {
     if (isSpeaking) {
@@ -31,7 +29,7 @@ export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDispla
       <CardHeader className="pb-2">
         <CardTitle className="text-xl flex items-center">
           <Icons.emergency className="mr-2 h-5 w-5 text-emergency" />
-          {t('emergency.guidance.title')}
+          Emergency Guidance
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -39,7 +37,7 @@ export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDispla
       </CardContent>
       <CardFooter className="flex justify-between flex-wrap gap-2 pt-2 border-t">
         <p className="text-sm text-muted-foreground">
-          <strong className="font-medium">{t('emergency.guidance.important')}</strong> {t('emergency.guidance.call')}
+          <strong className="font-medium">Important:</strong> Call emergency services if the situation is serious
         </p>
         <div className="flex gap-2">
           {isSupported && (
@@ -50,7 +48,7 @@ export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDispla
               className={cn(isSpeaking && "bg-primary/10")}
             >
               <Icons.voice className="mr-1 h-4 w-4" />
-              {isSpeaking ? t('emergency.guidance.stop') : t('emergency.guidance.speak')}
+              {isSpeaking ? "Stop Speaking" : "Speak Instructions"}
             </Button>
           )}
           <Button 
@@ -59,7 +57,7 @@ export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDispla
             onClick={onReset}
           >
             <Icons.reset className="mr-1 h-4 w-4" />
-            {t('emergency.guidance.new')}
+            New Search
           </Button>
         </div>
       </CardFooter>

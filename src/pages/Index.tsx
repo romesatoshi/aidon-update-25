@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -8,8 +9,6 @@ import useEmergencyData from "@/hooks/useEmergencyData";
 import Icons from "@/components/Icons";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
-import LanguageSelector from "@/components/LanguageSelector";
 
 const Index = () => {
   const [emergency, setEmergency] = useState("");
@@ -17,7 +16,6 @@ const Index = () => {
   const [showFollowUp, setShowFollowUp] = useState(false);
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
-  const { t } = useLanguage();
   const { 
     data, 
     loading, 
@@ -113,41 +111,27 @@ const Index = () => {
       />
       
       <div className="container max-w-3xl mx-auto p-4 md:p-6 lg:p-8">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
             <Icons.emergency className="mr-2 h-6 w-6 text-emergency" />
-            <span className="hidden xs:inline">{t('app.title')}</span>
-            <span className="xs:hidden">{t('app.title.short')}</span>
+            <span className="hidden xs:inline">Medical Guidance Assistant</span>
+            <span className="xs:hidden">Medical Guide</span>
           </h1>
           <div className="flex items-center gap-2">
-            <LanguageSelector />
             {isAuthenticated ? (
               <span className="text-sm text-muted-foreground hidden sm:block">
-                <Link to="/medical-records">
-                  <Button variant="outline" size="sm" className="flex items-center gap-1">
-                    <Icons.medicalRecords className="h-4 w-4 sm:mr-1" />
-                    <span className="hidden sm:inline">{user?.name}</span>
-                  </Button>
-                </Link>
+                Welcome, {user?.name}
               </span>
             ) : (
               <Link to="/login">
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
                   <Icons.login className="h-4 w-4 sm:mr-1" />
-                  <span className="hidden sm:inline">{t('app.signin')}</span>
+                  <span className="hidden sm:inline">Sign In</span>
                 </Button>
               </Link>
             )}
           </div>
         </div>
-        
-        {isAuthenticated && (
-          <div className="mb-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              {t('app.welcome')}, {user?.name}
-            </p>
-          </div>
-        )}
         
         <EmergencyInput 
           onSubmit={handleEmergencySubmit} 
@@ -167,8 +151,8 @@ const Index = () => {
         )}
         
         <footer className="text-xs text-center text-muted-foreground mt-8">
-          <p>{t('app.footer.disclaimer')}</p>
-          <p className="mt-1">{t('app.footer.emergency')}</p>
+          <p>This application is for informational purposes only and is not a substitute for professional medical advice.</p>
+          <p className="mt-1">Always call emergency services for serious medical situations.</p>
         </footer>
       </div>
     </div>

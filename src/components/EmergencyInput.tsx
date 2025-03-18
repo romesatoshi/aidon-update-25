@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +13,6 @@ import {
   DrawerFooter
 } from "@/components/ui/drawer";
 import { FormField } from "./medical-records/FormField";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 interface EmergencyInputProps {
   onSubmit: (text: string) => void;
@@ -23,17 +23,7 @@ interface EmergencyInputProps {
   emergencyText?: string;
 }
 
-const calmingMessages = [
-  "Stay calm, we're getting guidance for you...",
-  "Take deep breaths. Help is on the way...",
-  "Everything will be alright. Getting your guidance now...",
-  "Staying calm helps in emergencies. Getting information...",
-  "You're doing great. Preparing guidance for you...",
-  "Help is coming. We're finding the best guidance...",
-  "Keep breathing slowly. Guidance is being prepared...",
-  "You've got this. We're getting specific steps for you..."
-];
-
+// Common emergency types and their follow-up questions
 const followUpQuestions = {
   "unconscious": [
     "Is the person breathing?",
@@ -91,8 +81,6 @@ export function EmergencyInput({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [currentQuestions, setCurrentQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [calmingMessage, setCalmingMessage] = useState("");
-  const { t } = useLanguage();
   
   const { 
     isListening, 
@@ -107,6 +95,7 @@ export function EmergencyInput({
     }
   });
 
+  // Effect to set drawer open state when showFollowUp changes
   useEffect(() => {
     if (showFollowUp) {
       determineFollowUpQuestions(emergencyText);
@@ -122,21 +111,6 @@ export function EmergencyInput({
     }
   }, [transcript]);
 
-  useEffect(() => {
-    if (isLoading) {
-      const initialMessage = calmingMessages[Math.floor(Math.random() * calmingMessages.length)];
-      setCalmingMessage(initialMessage);
-      
-      const intervalId = setInterval(() => {
-        setCalmingMessage(calmingMessages[Math.floor(Math.random() * calmingMessages.length)]);
-      }, 3000);
-      
-      return () => clearInterval(intervalId);
-    } else {
-      setCalmingMessage("");
-    }
-  }, [isLoading]);
-
   const handleSubmit = () => {
     if (text.trim() && !isLoading) {
       onSubmit(text.trim());
@@ -144,9 +118,11 @@ export function EmergencyInput({
   };
 
   const determineFollowUpQuestions = (inputText: string) => {
+    // Simple text matching to determine emergency type
     const lowerText = inputText.toLowerCase();
     let questionsToUse = followUpQuestions.default;
     
+    // Find the most relevant question set
     for (const [keyword, questions] of Object.entries(followUpQuestions)) {
       if (keyword !== "default" && lowerText.includes(keyword)) {
         questionsToUse = questions;
@@ -192,7 +168,7 @@ export function EmergencyInput({
         <>
           <div className="relative">
             <Textarea
-              placeholder={t('emergency.input.placeholder')}
+              placeholder="Describe the emergency specifically (e.g., 'person unconscious after fall' or 'child choking on food')"
               value={text}
               onChange={(e) => setText(e.target.value)}
               className="min-h-[100px] p-4 resize-none transition-all focus-visible:ring-primary"
@@ -213,7 +189,7 @@ export function EmergencyInput({
             )}
           </div>
           
-          <div className="flex flex-col gap-3">
+          <div className="flex gap-3">
             <Button
               className={cn(
                 "flex-1 bg-emergency hover:bg-emergency-hover text-emergency-foreground",
@@ -223,25 +199,27 @@ export function EmergencyInput({
               disabled={isLoading || !text.trim()}
             >
               <Icons.emergency className="mr-2 h-4 w-4" />
-              {isLoading ? calmingMessage || t('emergency.button.loading') : t('emergency.button.get')}
+              {isLoading ? "Getting guidance..." : "Get Specific First Aid Steps"}
             </Button>
             
-            <div className="flex gap-2 justify-center">
-              {isSupported && (
-                <Button
-                  variant={isListening ? "default" : "outline"}
-                  className={cn(
-                    "relative",
-                    isListening && "bg-primary text-primary-foreground"
-                  )}
-                  onClick={isListening ? stopListening : startListening}
-                  disabled={isLoading}
-                >
-                  <Icons.voice className="h-4 w-4 mr-2" />
-                  {isListening ? t('emergency.button.listening') : t('emergency.button.speak')}
-                </Button>
-              )}
-            </div>
+            {isSupported && (
+              <Button
+                variant={isListening ? "default" : "outline"}
+                className={cn(
+                  "relative",
+                  isListening && "bg-primary text-primary-foreground"
+                )}
+                onClick={isListening ? stopListening : startListening}
+                disabled={isLoading}
+              >
+                <Icons.voice className="h-4 w-4" />
+                {isListening && (
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <span className="animate-ripple absolute inline-flex h-full w-full rounded-full bg-primary opacity-50"></span>
+                  </span>
+                )}
+              </Button>
+            )}
           </div>
         </>
       )}
@@ -251,12 +229,12 @@ export function EmergencyInput({
           <DrawerHeader>
             <DrawerTitle className="text-center text-lg font-medium">
               <Icons.emergency className="inline-block mr-2 h-5 w-5 text-emergency" />
-              {t('follow.up.title')}
+              Can You Provide More Details?
             </DrawerTitle>
           </DrawerHeader>
           <div className="p-4 space-y-4">
             <p className="text-sm text-muted-foreground">
-              {t('follow.up.help')}
+              Answering these questions will help us provide more accurate guidance for this emergency:
             </p>
             <div className="space-y-4 max-h-[50vh] overflow-y-auto p-1">
               {currentQuestions.map((question, index) => (
@@ -279,13 +257,13 @@ export function EmergencyInput({
               disabled={isLoading}
             >
               <Icons.emergency className="mr-2 h-4 w-4" />
-              {t('follow.up.submit')}
+              Submit Additional Information
             </Button>
             <Button 
               variant="outline" 
               onClick={handleCloseDrawer}
             >
-              {t('follow.up.skip')}
+              Skip Questions
             </Button>
           </DrawerFooter>
         </DrawerContent>
