@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
 import EmergencyInput from "@/components/EmergencyInput";
 import GuidanceDisplay from "@/components/GuidanceDisplay";
 import UserSidebar from "@/components/UserSidebar";
@@ -10,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [emergency, setEmergency] = useState("");
@@ -123,12 +123,9 @@ const Index = () => {
             <LanguageSelector />
             {isAuthenticated ? (
               <span className="text-sm text-muted-foreground hidden sm:block">
-                <Link to="/medical-records">
-                  <Button variant="outline" size="sm" className="flex items-center gap-1">
-                    <Icons.medicalRecords className="h-4 w-4 sm:mr-1" />
-                    <span className="hidden sm:inline">{user?.name}</span>
-                  </Button>
-                </Link>
+                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                  <span>{user?.name}</span>
+                </Button>
               </span>
             ) : (
               <Link to="/login">
@@ -169,6 +166,7 @@ const Index = () => {
         <footer className="text-xs text-center text-muted-foreground mt-8">
           <p>{t('app.footer.disclaimer')}</p>
           <p className="mt-1">{t('app.footer.emergency')}</p>
+          <p className="mt-1">{t('app.footer.qrcode')}</p>
         </footer>
       </div>
     </div>

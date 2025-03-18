@@ -37,11 +37,14 @@ export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDispla
       <CardContent>
         <p className="text-balance">{guidance}</p>
       </CardContent>
-      <CardFooter className="flex justify-between flex-wrap gap-2 pt-2 border-t">
-        <p className="text-sm text-muted-foreground">
+      <CardFooter className="flex flex-col gap-2 pt-2 border-t">
+        <p className="text-sm text-muted-foreground w-full">
           <strong className="font-medium">{t('emergency.guidance.important')}</strong> {t('emergency.guidance.call')}
         </p>
-        <div className="flex gap-2">
+        <p className="text-sm text-muted-foreground w-full">
+          <strong className="font-medium">{t('emergency.guidance.qrcode.title')}</strong> {t('emergency.guidance.qrcode.scan')}
+        </p>
+        <div className="flex gap-2 w-full justify-end">
           {isSupported && (
             <Button 
               variant="outline" 
