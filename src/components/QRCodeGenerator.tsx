@@ -22,29 +22,13 @@ interface QRCodeGeneratorProps {
 const QRCodeGenerator = ({ medicalRecord }: QRCodeGeneratorProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Generate emergency information string
+  // Generate simplified emergency information string with only essential data
   const emergencyInfo = `EMERGENCY MEDICAL INFO:
 Name: ${medicalRecord.fullName}
-Blood Group: ${medicalRecord.bloodGroup}
 Age: ${medicalRecord.age}
-Sex: ${medicalRecord.sex}
-Date of Birth: ${medicalRecord.dateOfBirth || "Not provided"}
-Weight: ${medicalRecord.weight || "Not provided"}
-Marital Status: ${medicalRecord.maritalStatus || "Not provided"}
-Address: ${medicalRecord.address || "Not provided"}
-Primary Language: ${medicalRecord.language || "Not provided"}
-Allergies: ${medicalRecord.allergies || "None reported"}
-Medical Conditions: ${medicalRecord.conditions || "None reported"}
-Medications: ${medicalRecord.medications || "None reported"}
-Medication Dosage: ${medicalRecord.medicationDosage || "Not provided"}
-Recent Hospitalizations: ${medicalRecord.recentHospitalizations || "None reported"}
-Primary Physician: ${medicalRecord.primaryPhysician || "Not provided"}
-Health Insurance: ${medicalRecord.healthInsurance || "Not provided"}
-Advance Directives: ${medicalRecord.advanceDirectives || "Not provided"}
-Organ Donor: ${medicalRecord.organDonor || "Not provided"}
+Blood Group: ${medicalRecord.bloodGroup}
 Emergency Contact: ${medicalRecord.emergencyContact || "Not provided"}
-Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}
-Emergency Code: ${medicalRecord.emergencyCode || "Not available"}`;
+Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}`;
 
   // Function to copy text to clipboard
   const copyToClipboard = () => {
@@ -73,7 +57,7 @@ Emergency Code: ${medicalRecord.emergencyCode || "Not available"}`;
         <DialogHeader>
           <DialogTitle>Emergency Medical QR Code</DialogTitle>
           <DialogDescription>
-            Scan this QR code to access emergency medical information for {medicalRecord.fullName}.
+            Scan this QR code to access essential emergency medical information for {medicalRecord.fullName}.
             {medicalRecord.emergencyCode && (
               <div className="mt-2 p-2 bg-muted rounded-md">
                 <p className="text-xs font-mono">Emergency Code: {medicalRecord.emergencyCode}</p>

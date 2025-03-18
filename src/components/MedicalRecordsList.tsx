@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Icons from "./Icons";
 import { type MedicalRecord } from "./medical-records/types";
 import MedicalRecordForm from "./medical-records/MedicalRecordForm";
+import QRCodeGenerator from "./QRCodeGenerator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,7 +82,6 @@ export function MedicalRecordsList({
     }).format(date);
   };
 
-  // If we're editing a record, show the form instead
   if (editingRecord) {
     return (
       <div className="p-4 border-t">
@@ -131,6 +130,7 @@ export function MedicalRecordsList({
                     </p>
                   </div>
                   <div className="flex items-center gap-1">
+                    <QRCodeGenerator medicalRecord={record} />
                     <Button 
                       variant="ghost" 
                       size="icon" 
@@ -196,12 +196,11 @@ export function MedicalRecordsList({
         )}
       </ScrollArea>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={recordToDelete !== null} onOpenChange={(isOpen) => !isOpen && setRecordToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <Icons.alertTriangle className="h-5 w-5 text-destructive" />
+              <Icons.emergency className="h-5 w-5 text-destructive" />
               Confirm Deletion
             </AlertDialogTitle>
             <AlertDialogDescription>
