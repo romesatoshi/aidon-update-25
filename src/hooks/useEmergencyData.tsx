@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { mockUserHistory } from '../lib/mockData';
 import { MedicalRecord } from '@/components/medical-records/types';
@@ -127,6 +126,19 @@ export function useEmergencyData() {
         medicalRecords: updatedRecords
       };
     });
+  };
+
+  // Check if emergency text explicitly asks for personal information
+  const requestsPersonalInfo = (text: string): boolean => {
+    const lowerText = text.toLowerCase();
+    return lowerText.includes("my info") || 
+           lowerText.includes("my medical") || 
+           lowerText.includes("my record") || 
+           lowerText.includes("my details") ||
+           lowerText.includes("my allergies") ||
+           lowerText.includes("my medication") ||
+           lowerText.includes("my condition") ||
+           lowerText.includes("about me");
   };
 
   const requestGuidance = async (emergencyText: string): Promise<string> => {
@@ -313,57 +325,59 @@ export function useEmergencyData() {
         guidance = "For this emergency: 1. Call emergency services immediately. 2. Check consciousness and breathing. 3. If unconscious but breathing, place in recovery position (on side). 4. If not breathing, begin CPR if trained. 5. Control any bleeding with direct pressure. 6. Don't move victim if spinal injury possible. 7. Keep victim warm. 8. Monitor vital signs until help arrives.";
       }
       
-      // Create customized guidance incorporating medical details if available
+      // Only add personalized info if explicitly requested
       let personalizedGuidance = "";
-      const currentMedicalRecord = data.medicalRecords?.[0];
-      
-      // Add personalized info based on medical record if available
-      if (currentMedicalRecord) {
-        const relevantConditions = [];
+      if (requestsPersonalInfo(emergencyText)) {
+        const currentMedicalRecord = data.medicalRecords?.[0];
         
-        // Include age and sex information in personalization if available
-        let demographicInfo = "";
-        if (currentMedicalRecord.age) {
-          demographicInfo += `${currentMedicalRecord.age} years old`;
-        }
-        if (currentMedicalRecord.sex) {
-          demographicInfo += demographicInfo ? `, ${currentMedicalRecord.sex.toLowerCase()}` : currentMedicalRecord.sex;
-        }
-        if (demographicInfo) {
-          personalizedGuidance += `Patient is ${demographicInfo}. `;
-        }
-        
-        // Check if the emergency might be related to existing conditions
-        if (currentMedicalRecord.conditions && 
-            (emergencyText.toLowerCase().includes("chest pain") || 
-             emergencyText.toLowerCase().includes("heart"))) {
-          relevantConditions.push("heart condition");
-        }
-        
-        if (currentMedicalRecord.allergies && 
-            (emergencyText.toLowerCase().includes("rash") || 
-             emergencyText.toLowerCase().includes("swelling") || 
-             emergencyText.toLowerCase().includes("breathing") ||
-             emergencyText.toLowerCase().includes("allergic"))) {
-          relevantConditions.push("allergies");
-        }
-        
-        if (relevantConditions.length > 0) {
-          personalizedGuidance += `IMPORTANT - Medical record notes ${relevantConditions.join(", ")}. `;
-        }
-        
-        // Add medication and allergy info if relevant to the emergency
-        if (emergencyText.toLowerCase().includes("allergic") && currentMedicalRecord.allergies) {
-          personalizedGuidance += `Known allergies: ${currentMedicalRecord.allergies}. `;
-        } 
-        
-        if ((emergencyText.toLowerCase().includes("chest") || emergencyText.toLowerCase().includes("heart")) && currentMedicalRecord.medications) {
-          personalizedGuidance += `Current medications: ${currentMedicalRecord.medications}. Inform emergency services. `;
-        }
-        
-        // Add emergency contact
-        if (currentMedicalRecord.emergencyContact && currentMedicalRecord.emergencyPhone) {
-          guidance += ` Emergency contact: ${currentMedicalRecord.emergencyContact} at ${currentMedicalRecord.emergencyPhone}.`;
+        // Add personalized info based on medical record if available and explicitly requested
+        if (currentMedicalRecord) {
+          const relevantConditions = [];
+          
+          // Include age and sex information in personalization if available
+          let demographicInfo = "";
+          if (currentMedicalRecord.age) {
+            demographicInfo += `${currentMedicalRecord.age} years old`;
+          }
+          if (currentMedicalRecord.sex) {
+            demographicInfo += demographicInfo ? `, ${currentMedicalRecord.sex.toLowerCase()}` : currentMedicalRecord.sex;
+          }
+          if (demographicInfo) {
+            personalizedGuidance += `Patient is ${demographicInfo}. `;
+          }
+          
+          // Check if the emergency might be related to existing conditions
+          if (currentMedicalRecord.conditions && 
+              (emergencyText.toLowerCase().includes("chest pain") || 
+               emergencyText.toLowerCase().includes("heart"))) {
+            relevantConditions.push("heart condition");
+          }
+          
+          if (currentMedicalRecord.allergies && 
+              (emergencyText.toLowerCase().includes("rash") || 
+               emergencyText.toLowerCase().includes("swelling") || 
+               emergencyText.toLowerCase().includes("breathing") ||
+               emergencyText.toLowerCase().includes("allergic"))) {
+            relevantConditions.push("allergies");
+          }
+          
+          if (relevantConditions.length > 0) {
+            personalizedGuidance += `IMPORTANT - Medical record notes ${relevantConditions.join(", ")}. `;
+          }
+          
+          // Add medication and allergy info if relevant to the emergency
+          if (emergencyText.toLowerCase().includes("allergic") && currentMedicalRecord.allergies) {
+            personalizedGuidance += `Known allergies: ${currentMedicalRecord.allergies}. `;
+          } 
+          
+          if ((emergencyText.toLowerCase().includes("chest") || emergencyText.toLowerCase().includes("heart")) && currentMedicalRecord.medications) {
+            personalizedGuidance += `Current medications: ${currentMedicalRecord.medications}. Inform emergency services. `;
+          }
+          
+          // Add emergency contact
+          if (currentMedicalRecord.emergencyContact && currentMedicalRecord.emergencyPhone) {
+            personalizedGuidance += `Emergency contact: ${currentMedicalRecord.emergencyContact} at ${currentMedicalRecord.emergencyPhone}. `;
+          }
         }
       }
       
@@ -388,4 +402,3 @@ export function useEmergencyData() {
 }
 
 export default useEmergencyData;
-
