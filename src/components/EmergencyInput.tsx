@@ -23,6 +23,18 @@ interface EmergencyInputProps {
   emergencyText?: string;
 }
 
+// Calming messages to show during loading
+const calmingMessages = [
+  "Stay calm, we're getting guidance for you...",
+  "Take deep breaths. Help is on the way...",
+  "Everything will be alright. Getting your guidance now...",
+  "Staying calm helps in emergencies. Getting information...",
+  "You're doing great. Preparing guidance for you...",
+  "Help is coming. We're finding the best guidance...",
+  "Keep breathing slowly. Guidance is being prepared...",
+  "You've got this. We're getting specific steps for you..."
+];
+
 // Common emergency types and their follow-up questions
 const followUpQuestions = {
   "unconscious": [
@@ -81,6 +93,7 @@ export function EmergencyInput({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [currentQuestions, setCurrentQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [calmingMessage, setCalmingMessage] = useState("");
   
   const { 
     isListening, 
@@ -110,6 +123,22 @@ export function EmergencyInput({
       setText(transcript);
     }
   }, [transcript]);
+
+  // Effect to rotate calming messages during loading
+  useEffect(() => {
+    if (isLoading) {
+      const initialMessage = calmingMessages[Math.floor(Math.random() * calmingMessages.length)];
+      setCalmingMessage(initialMessage);
+      
+      const intervalId = setInterval(() => {
+        setCalmingMessage(calmingMessages[Math.floor(Math.random() * calmingMessages.length)]);
+      }, 3000);
+      
+      return () => clearInterval(intervalId);
+    } else {
+      setCalmingMessage("");
+    }
+  }, [isLoading]);
 
   const handleSubmit = () => {
     if (text.trim() && !isLoading) {
@@ -189,7 +218,7 @@ export function EmergencyInput({
             )}
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3">
             <Button
               className={cn(
                 "flex-1 bg-emergency hover:bg-emergency-hover text-emergency-foreground",
@@ -199,27 +228,25 @@ export function EmergencyInput({
               disabled={isLoading || !text.trim()}
             >
               <Icons.emergency className="mr-2 h-4 w-4" />
-              {isLoading ? "Getting guidance..." : "Get Specific First Aid Steps"}
+              {isLoading ? calmingMessage || "Getting guidance..." : "Get Specific First Aid Steps"}
             </Button>
             
-            {isSupported && (
-              <Button
-                variant={isListening ? "default" : "outline"}
-                className={cn(
-                  "relative",
-                  isListening && "bg-primary text-primary-foreground"
-                )}
-                onClick={isListening ? stopListening : startListening}
-                disabled={isLoading}
-              >
-                <Icons.voice className="h-4 w-4" />
-                {isListening && (
-                  <span className="absolute inset-0 flex items-center justify-center">
-                    <span className="animate-ripple absolute inline-flex h-full w-full rounded-full bg-primary opacity-50"></span>
-                  </span>
-                )}
-              </Button>
-            )}
+            <div className="flex gap-2 justify-center">
+              {isSupported && (
+                <Button
+                  variant={isListening ? "default" : "outline"}
+                  className={cn(
+                    "relative",
+                    isListening && "bg-primary text-primary-foreground"
+                  )}
+                  onClick={isListening ? stopListening : startListening}
+                  disabled={isLoading}
+                >
+                  <Icons.voice className="h-4 w-4 mr-2" />
+                  {isListening ? "Listening..." : "Speak Emergency"}
+                </Button>
+              )}
+            </div>
           </div>
         </>
       )}
