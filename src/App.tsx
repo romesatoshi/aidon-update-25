@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import MedicalRecords from "./pages/MedicalRecords";
+import AITraining from "./pages/AITraining";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MedicalRecords />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/ai-training" 
+              element={
+                <ProtectedRoute>
+                  <AITraining />
                 </ProtectedRoute>
               } 
             />

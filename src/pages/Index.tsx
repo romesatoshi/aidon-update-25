@@ -114,14 +114,22 @@ const Index = () => {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
             <Icons.emergency className="mr-2 h-6 w-6 text-emergency" />
-            <span className="hidden xs:inline">Medical Guidance Assistant</span>
-            <span className="xs:hidden">Medical Guide</span>
+            <span className="hidden xs:inline">Aid-On: Medical Guidance Assistant</span>
+            <span className="xs:hidden">Aid-On</span>
           </h1>
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
-              <span className="text-sm text-muted-foreground hidden sm:block">
-                Welcome, {user?.name}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground hidden sm:block">
+                  Welcome, {user?.name}
+                </span>
+                <Link to="/ai-training">
+                  <Button variant="outline" size="sm" className="flex items-center gap-1">
+                    <Icons.brain className="h-4 w-4 sm:mr-1" />
+                    <span className="hidden sm:inline">AI Training</span>
+                  </Button>
+                </Link>
+              </div>
             ) : (
               <Link to="/login">
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
@@ -151,7 +159,7 @@ const Index = () => {
         )}
         
         <footer className="text-xs text-center text-muted-foreground mt-8">
-          <p>This application is for informational purposes only and is not a substitute for professional medical advice.</p>
+          <p>Aid-On is for informational purposes only and is not a substitute for professional medical advice.</p>
           <p className="mt-1">Always call emergency services for serious medical situations.</p>
         </footer>
       </div>
