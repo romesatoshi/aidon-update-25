@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import EmergencyInput from "@/components/EmergencyInput";
@@ -9,11 +9,25 @@ import useEmergencyData from "@/hooks/useEmergencyData";
 import Icons from "@/components/Icons";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from "@/components/ui/dialog";
 
 const Index = () => {
   const [emergency, setEmergency] = useState("");
   const [guidance, setGuidance] = useState("");
   const [showFollowUp, setShowFollowUp] = useState(false);
+  const [searchCount, setSearchCount] = useState(() => {
+    // Initialize from localStorage if available
+    const savedCount = localStorage.getItem("emergencySearchCount");
+    return savedCount ? parseInt(savedCount, 0) : 0;
+  });
+  const [showSignInPrompt, setShowSignInPrompt] = useState(false);
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
   const { 
@@ -26,6 +40,31 @@ const Index = () => {
     deleteMedicalRecord
   } = useEmergencyData();
 
+  // Effect to handle delayed follow-up questions
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
+    if (guidance && !showFollowUp) {
+      timer = setTimeout(() => {
+        setShowFollowUp(true);
+      }, 8000); // Show follow-up after 8 seconds
+    }
+    
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [guidance, showFollowUp]);
+
+  // Effect to persist search count to localStorage
+  useEffect(() => {
+    localStorage.setItem("emergencySearchCount", searchCount.toString());
+    
+    // Show sign-in prompt after two searches for non-authenticated users
+    if (!isAuthenticated && searchCount === 2) {
+      setShowSignInPrompt(true);
+    }
+  }, [searchCount, isAuthenticated]);
+
   const handleEmergencySubmit = async (text: string) => {
     setEmergency(text);
     
@@ -33,7 +72,10 @@ const Index = () => {
       const guidanceText = await requestGuidance(text);
       setGuidance(guidanceText);
       
-      setShowFollowUp(true);
+      // Update search count for non-authenticated users
+      if (!isAuthenticated) {
+        setSearchCount(prev => prev + 1);
+      }
       
       const emergencyTitle = text.split('\n')[0];
       addEmergencyEntry(emergencyTitle, guidanceText);
@@ -97,6 +139,10 @@ const Index = () => {
       title: "Medical record saved",
       description: "Your medical information has been saved successfully.",
     });
+  };
+
+  const closeSignInPrompt = () => {
+    setShowSignInPrompt(false);
   };
 
   return (
@@ -163,6 +209,46 @@ const Index = () => {
           <p className="mt-1">Always call emergency services for serious medical situations.</p>
         </footer>
       </div>
+
+      {/* Sign-in Prompt Dialog */}
+      <Dialog open={showSignInPrompt} onOpenChange={closeSignInPrompt}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Icons.emergency className="mr-2 h-5 w-5 text-emergency" />
+              Create an Aid-On Account
+            </DialogTitle>
+            <DialogDescription>
+              Sign in to save your emergency history, store medical information, and access additional features.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm">
+              With an account, you can:
+            </p>
+            <ul className="mt-2 ml-6 text-sm list-disc space-y-1">
+              <li>Save your search history for quick access</li>
+              <li>Store important medical information</li>
+              <li>Access your data from any device</li>
+              <li>Help improve Aid-On's emergency guidance</li>
+            </ul>
+          </div>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Link to="/register" className="w-full sm:w-auto">
+              <Button className="w-full bg-emergency hover:bg-emergency-hover text-emergency-foreground">
+                <Icons.user className="mr-2 h-4 w-4" />
+                Create Account
+              </Button>
+            </Link>
+            <Link to="/login" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full">
+                <Icons.login className="mr-2 h-4 w-4" />
+                Sign In
+              </Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
