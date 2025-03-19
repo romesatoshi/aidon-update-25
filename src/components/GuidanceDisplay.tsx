@@ -9,16 +9,34 @@ interface GuidanceDisplayProps {
   guidance: string;
   onReset: () => void;
   className?: string;
+  additionalInfo?: Record<string, string>;
 }
 
-export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDisplayProps) {
+export function GuidanceDisplay({ 
+  guidance, 
+  onReset, 
+  className,
+  additionalInfo 
+}: GuidanceDisplayProps) {
   const { isSupported, isSpeaking, speak, cancel } = useSpeechSynthesis();
 
   const handleSpeak = () => {
+    let textToSpeak = guidance;
+    
+    // Add additional info to speech if available
+    if (additionalInfo && Object.keys(additionalInfo).length > 0) {
+      textToSpeak += ". Additional information: ";
+      for (const [question, answer] of Object.entries(additionalInfo)) {
+        if (answer.trim()) {
+          textToSpeak += `${question}: ${answer}. `;
+        }
+      }
+    }
+    
     if (isSpeaking) {
       cancel();
     } else {
-      speak(guidance);
+      speak(textToSpeak);
     }
   };
 
@@ -33,7 +51,25 @@ export function GuidanceDisplay({ guidance, onReset, className }: GuidanceDispla
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-balance">{guidance}</p>
+        <div className="space-y-4">
+          <p className="text-balance">{guidance}</p>
+          
+          {additionalInfo && Object.keys(additionalInfo).length > 0 && (
+            <div className="mt-4 pt-4 border-t">
+              <h3 className="font-medium text-sm mb-2">Additional Information:</h3>
+              <ul className="space-y-2 text-sm">
+                {Object.entries(additionalInfo).map(([question, answer], index) => (
+                  answer.trim() ? (
+                    <li key={index} className="grid grid-cols-1 gap-1">
+                      <span className="font-medium">{question}</span>
+                      <span className="text-muted-foreground">{answer}</span>
+                    </li>
+                  ) : null
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </CardContent>
       <CardFooter className="flex justify-between flex-wrap gap-2 pt-2 border-t">
         <p className="text-sm text-muted-foreground">

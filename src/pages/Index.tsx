@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -21,6 +22,7 @@ const Index = () => {
   const [emergency, setEmergency] = useState("");
   const [guidance, setGuidance] = useState("");
   const [showFollowUp, setShowFollowUp] = useState(false);
+  const [additionalInfo, setAdditionalInfo] = useState<Record<string, string>>({});
   const [searchCount, setSearchCount] = useState(() => {
     const savedCount = localStorage.getItem("emergencySearchCount");
     return savedCount ? parseInt(savedCount, 0) : 0;
@@ -64,6 +66,7 @@ const Index = () => {
 
   const handleEmergencySubmit = async (text: string) => {
     setEmergency(text);
+    setAdditionalInfo({}); // Reset additional info when new search is submitted
     
     try {
       const guidanceText = await requestGuidance(text);
@@ -90,14 +93,18 @@ const Index = () => {
     setEmergency("");
     setGuidance("");
     setShowFollowUp(false);
+    setAdditionalInfo({});
   };
 
-  const handleFollowUpSubmit = (additionalInfo: Record<string, string>) => {
-    if (Object.keys(additionalInfo).length > 0) {
+  const handleFollowUpSubmit = (additionalDetails: Record<string, string>) => {
+    if (Object.keys(additionalDetails).length > 0) {
+      // Store the additional info for display
+      setAdditionalInfo(additionalDetails);
+      
       let updatedEmergency = emergency;
       
       updatedEmergency += "\n\nAdditional Information:";
-      for (const [question, answer] of Object.entries(additionalInfo)) {
+      for (const [question, answer] of Object.entries(additionalDetails)) {
         if (answer.trim()) {
           updatedEmergency += `\n- ${question}: ${answer}`;
         }
@@ -106,11 +113,11 @@ const Index = () => {
       setEmergency(updatedEmergency);
       
       const emergencyTitle = emergency.split('\n')[0];
-      addEmergencyEntry(emergencyTitle, guidance, additionalInfo);
+      addEmergencyEntry(emergencyTitle, guidance, additionalDetails);
       
       toast({
         title: "Information updated",
-        description: "The additional details have been saved.",
+        description: "The additional details have been saved and added to your guidance.",
       });
     }
     
@@ -120,6 +127,7 @@ const Index = () => {
   const handleSelectHistoryEntry = (entry: any) => {
     setEmergency(entry.emergency);
     setGuidance(entry.guidance);
+    setAdditionalInfo(entry.additionalInfo || {});
     setShowFollowUp(false);
     
     toast({
@@ -199,6 +207,7 @@ const Index = () => {
             guidance={guidance} 
             onReset={handleReset} 
             className="mb-6"
+            additionalInfo={additionalInfo}
           />
         )}
         
