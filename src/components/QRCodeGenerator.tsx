@@ -22,11 +22,14 @@ interface QRCodeGeneratorProps {
 const QRCodeGenerator = ({ medicalRecord }: QRCodeGeneratorProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Generate simplified emergency information string with only essential data
+  // Generate enhanced emergency information string with essential data including medical conditions
   const emergencyInfo = `EMERGENCY MEDICAL INFO:
 Name: ${medicalRecord.fullName}
 Age: ${medicalRecord.age}
 Blood Group: ${medicalRecord.bloodGroup}
+Allergies: ${medicalRecord.allergies || "None reported"}
+Medical Conditions: ${medicalRecord.conditions || "None reported"}
+Medications: ${medicalRecord.medications || "None reported"}
 Emergency Contact: ${medicalRecord.emergencyContact || "Not provided"}
 Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}`;
 
