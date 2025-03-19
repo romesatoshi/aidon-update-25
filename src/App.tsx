@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -14,6 +14,24 @@ import MedicalRecords from "./pages/MedicalRecords";
 import AITraining from "./pages/AITraining";
 
 const queryClient = new QueryClient();
+
+// Add an AdminRoute component to check for admin permissions
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const checkAdmin = () => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      try {
+        const user = JSON.parse(savedUser);
+        return user.email === "test@example.com";
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
+  };
+  
+  return checkAdmin() ? <>{children}</> : <Navigate to="/" replace />;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -38,7 +56,9 @@ const App = () => (
               path="/ai-training" 
               element={
                 <ProtectedRoute>
-                  <AITraining />
+                  <AdminRoute>
+                    <AITraining />
+                  </AdminRoute>
                 </ProtectedRoute>
               } 
             />

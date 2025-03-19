@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -23,7 +22,6 @@ const Index = () => {
   const [guidance, setGuidance] = useState("");
   const [showFollowUp, setShowFollowUp] = useState(false);
   const [searchCount, setSearchCount] = useState(() => {
-    // Initialize from localStorage if available
     const savedCount = localStorage.getItem("emergencySearchCount");
     return savedCount ? parseInt(savedCount, 0) : 0;
   });
@@ -40,14 +38,15 @@ const Index = () => {
     deleteMedicalRecord
   } = useEmergencyData();
 
-  // Effect to handle delayed follow-up questions
+  const isAdmin = isAuthenticated && user?.email === "test@example.com";
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     
     if (guidance && !showFollowUp) {
       timer = setTimeout(() => {
         setShowFollowUp(true);
-      }, 8000); // Show follow-up after 8 seconds
+      }, 8000);
     }
     
     return () => {
@@ -55,11 +54,9 @@ const Index = () => {
     };
   }, [guidance, showFollowUp]);
 
-  // Effect to persist search count to localStorage
   useEffect(() => {
     localStorage.setItem("emergencySearchCount", searchCount.toString());
     
-    // Show sign-in prompt after two searches for non-authenticated users
     if (!isAuthenticated && searchCount === 2) {
       setShowSignInPrompt(true);
     }
@@ -72,7 +69,6 @@ const Index = () => {
       const guidanceText = await requestGuidance(text);
       setGuidance(guidanceText);
       
-      // Update search count for non-authenticated users
       if (!isAuthenticated) {
         setSearchCount(prev => prev + 1);
       }
@@ -169,12 +165,14 @@ const Index = () => {
                 <span className="text-sm text-muted-foreground hidden sm:block">
                   Welcome, {user?.name}
                 </span>
-                <Link to="/ai-training">
-                  <Button variant="outline" size="sm" className="flex items-center gap-1">
-                    <Icons.brain className="h-4 w-4 sm:mr-1" />
-                    <span className="hidden sm:inline">AI Training</span>
-                  </Button>
-                </Link>
+                {isAdmin && (
+                  <Link to="/ai-training">
+                    <Button variant="outline" size="sm" className="flex items-center gap-1">
+                      <Icons.brain className="h-4 w-4 sm:mr-1" />
+                      <span className="hidden sm:inline">AI Training</span>
+                    </Button>
+                  </Link>
+                )}
               </div>
             ) : (
               <Link to="/login">
@@ -210,7 +208,6 @@ const Index = () => {
         </footer>
       </div>
 
-      {/* Sign-in Prompt Dialog */}
       <Dialog open={showSignInPrompt} onOpenChange={closeSignInPrompt}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
