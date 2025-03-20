@@ -29,7 +29,7 @@ const QRCodeWithWatermark: React.FC<QRCodeWithWatermarkProps> = ({ record }) => 
       <QRCode
         value={qrCodeValue}
         size={256}
-        level="H"
+        ecLevel="H"
         logoImage="/heart.png"
         logoWidth={64}
         logoHeight={64}
