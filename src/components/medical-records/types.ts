@@ -3,6 +3,8 @@ export interface MedicalRecord {
   id: string;
   fullName: string;
   bloodGroup: string;
+  genotype: string;
+  hivStatus: string;
   age: string;
   sex: string;
   maritalStatus: string;

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { MedicalRecord } from "./types";
@@ -6,6 +5,8 @@ import { MedicalRecord } from "./types";
 export interface FormData {
   fullName: string;
   bloodGroup: string;
+  genotype: string;
+  hivStatus: string;
   age: string;
   sex: string;
   maritalStatus: string;
@@ -31,6 +32,8 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     bloodGroup: "",
+    genotype: "",
+    hivStatus: "",
     age: "",
     sex: "",
     maritalStatus: "",
@@ -54,12 +57,13 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   
-  // Load initial data if provided (for editing)
   useEffect(() => {
     if (initialData) {
       setFormData({
         fullName: initialData.fullName,
         bloodGroup: initialData.bloodGroup,
+        genotype: initialData.genotype || "",
+        hivStatus: initialData.hivStatus || "",
         age: initialData.age || "",
         sex: initialData.sex || "",
         maritalStatus: initialData.maritalStatus || "",
@@ -106,7 +110,6 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     setLoading(true);
     
     try {
-      // In a real app, this would save to your backend
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       
       const updatedRecord: MedicalRecord = initialData ? 
@@ -120,7 +123,6 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
           createdAt: new Date().toISOString()
         };
 
-      // Call the onSave callback if provided
       if (onSave) {
         onSave(updatedRecord);
       }
@@ -131,10 +133,11 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
       });
       
       if (!initialData) {
-        // Only reset form if not editing
         setFormData({
           fullName: "",
           bloodGroup: "",
+          genotype: "",
+          hivStatus: "",
           age: "",
           sex: "",
           maritalStatus: "",
