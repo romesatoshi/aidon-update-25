@@ -28,24 +28,13 @@ export function PersonalInfoFields({ formData, handleInputChange }: PersonalInfo
           onChange={handleInputChange}
         />
         
-        <div className="flex flex-col gap-1">
-          <label htmlFor="genotype" className="text-xs font-medium mb-1 block">Genotype</label>
-          <select
-            id="genotype"
-            name="genotype"
-            value={formData.genotype}
-            onChange={handleInputChange}
-            className="rounded-md border border-input px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            <option value="">Select</option>
-            <option value="AA">AA</option>
-            <option value="AS">AS</option>
-            <option value="SS">SS</option>
-            <option value="AC">AC</option>
-            <option value="SC">SC</option>
-            <option value="Unknown">Unknown</option>
-          </select>
-        </div>
+        <FormField
+          id="dateOfBirth"
+          label="Date of Birth"
+          placeholder="MM/DD/YYYY"
+          value={formData.dateOfBirth}
+          onChange={handleInputChange}
+        />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -66,40 +55,12 @@ export function PersonalInfoFields({ formData, handleInputChange }: PersonalInfo
           </select>
         </div>
         
-        <div className="flex flex-col gap-1">
-          <label htmlFor="hivStatus" className="text-xs font-medium mb-1 block">HIV Status</label>
-          <select
-            id="hivStatus"
-            name="hivStatus"
-            value={formData.hivStatus}
-            onChange={handleInputChange}
-            className="rounded-md border border-input px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            <option value="">Select</option>
-            <option value="Positive">Positive</option>
-            <option value="Negative">Negative</option>
-            <option value="Unknown">Unknown</option>
-            <option value="Prefer not to say">Prefer not to say</option>
-          </select>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <FormField
           id="weight"
           label="Weight (in kg)"
           placeholder="Weight"
           value={formData.weight}
           onChange={handleInputChange}
-        />
-        
-        <FormField
-          id="bloodGroup"
-          label="Blood Group"
-          placeholder="Blood Group (e.g., A+, O-, AB+)"
-          value={formData.bloodGroup}
-          onChange={handleInputChange}
-          required
         />
       </div>
       
@@ -120,6 +81,15 @@ export function PersonalInfoFields({ formData, handleInputChange }: PersonalInfo
       />
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <FormField
+          id="bloodGroup"
+          label="Blood Group"
+          placeholder="Blood Group (e.g., A+, O-, AB+)"
+          value={formData.bloodGroup}
+          onChange={handleInputChange}
+          required
+        />
+        
         <div className="flex flex-col gap-1">
           <label htmlFor="maritalStatus" className="text-xs font-medium mb-1 block">Marital Status</label>
           <select
@@ -137,18 +107,6 @@ export function PersonalInfoFields({ formData, handleInputChange }: PersonalInfo
             <option value="Separated">Separated</option>
             <option value="Prefer not to say">Prefer not to say</option>
           </select>
-        </div>
-        
-        <div className="flex flex-col gap-1">
-          <label htmlFor="dateOfBirth" className="text-xs font-medium mb-1 block">Date of Birth</label>
-          <input
-            type="date"
-            id="dateOfBirth"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
-            onChange={handleInputChange}
-            className="rounded-md border border-input px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-          />
         </div>
       </div>
       
