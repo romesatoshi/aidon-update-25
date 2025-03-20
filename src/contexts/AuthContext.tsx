@@ -6,6 +6,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  isNewUser?: boolean;
 }
 
 interface AuthContextType {
@@ -16,6 +17,7 @@ interface AuthContextType {
   logout: () => void;
   resetPassword: (email: string) => Promise<void>;
   isAuthenticated: boolean;
+  completeOnboarding: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -56,8 +58,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     if (foundUser) {
       const { password, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
-      localStorage.setItem("user", JSON.stringify(userWithoutPassword));
+      // Check if this is the first login (no records in localStorage)
+      const hasRecords = localStorage.getItem(`medicalRecords_${foundUser.id}`);
+      
+      const userWithStatus = {
+        ...userWithoutPassword,
+        isNewUser: !hasRecords
+      };
+      
+      setUser(userWithStatus);
+      localStorage.setItem("user", JSON.stringify(userWithStatus));
       toast({
         title: "Welcome back!",
         description: `Logged in as ${foundUser.name}`,
@@ -92,7 +102,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     // In a real app, this would create a user in the database
-    const newUser = { id: `${DEMO_USERS.length + 1}`, name, email };
+    const newUser = { 
+      id: `${DEMO_USERS.length + 1}`, 
+      name, 
+      email,
+      isNewUser: true 
+    };
     
     // Set the user
     setUser(newUser);
@@ -150,6 +165,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const completeOnboarding = () => {
+    if (user) {
+      const updatedUser = { ...user, isNewUser: false };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -160,6 +183,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         resetPassword,
         isAuthenticated: !!user,
+        completeOnboarding,
       }}
     >
       {children}
