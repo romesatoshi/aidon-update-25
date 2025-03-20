@@ -18,7 +18,7 @@ export function MedicalRecordForm({ onClose, onSave, initialData }: MedicalRecor
         <PersonalInfoFields formData={formData} handleInputChange={handleInputChange} />
         <MedicalInfoFields formData={formData} handleInputChange={handleInputChange} />
         <EmergencyContactFields formData={formData} handleInputChange={handleInputChange} />
-        <FormActions loading={loading} isEditing={!!initialData} record={initialData} />
+        <FormActions loading={loading} isEditing={!!initialData} />
       </form>
     </div>
   );
