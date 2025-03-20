@@ -27,7 +27,10 @@ import {
   Download,
   Upload,
   RefreshCcw,
-  Brain
+  Brain,
+  Play,
+  FileIcon,
+  History
 } from "lucide-react";
 
 // Create custom icons or rename existing ones here
@@ -45,7 +48,9 @@ const Icons = {
   download: Download,
   edit: Edit,
   emergency: AlertTriangle, // Using AlertTriangle as a substitute for Emergency
+  file: FileIcon, // Added missing file icon
   fileText: FileText,
+  history: History, // Added missing history icon
   home: Home,
   loader: Loader2,
   login: LogIn,
@@ -53,6 +58,7 @@ const Icons = {
   medicalRecords: ClipboardList, // Using ClipboardList as a substitute for MedicalRecords
   menu: Menu,
   moon: Moon,
+  play: Play, // Added missing play icon
   plus: Plus,
   qrCode: QrCode,
   refresh: RefreshCcw,
