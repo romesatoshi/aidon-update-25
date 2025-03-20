@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
+  resetPassword: (email: string) => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -105,6 +106,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   };
 
+  const resetPassword = async (email: string) => {
+    setIsLoading(true);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Find user with that email
+    const foundUser = DEMO_USERS.find(u => u.email === email);
+    
+    if (!foundUser) {
+      toast({
+        title: "Reset failed",
+        description: "Email not found in our system",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      throw new Error("Email not found");
+    }
+    
+    // In a real app, this would:
+    // 1. Generate a reset token
+    // 2. Email the user with a reset link
+    // 3. Not automatically reset the password
+    
+    // For demo purposes, we're "resetting" the password to a known value
+    foundUser.password = "reset123";
+    
+    toast({
+      title: "Password reset",
+      description: "Password reset email has been sent (demo mode)",
+    });
+    
+    setIsLoading(false);
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
@@ -122,6 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
+        resetPassword,
         isAuthenticated: !!user,
       }}
     >
