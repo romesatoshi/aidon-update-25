@@ -120,7 +120,8 @@ const Login = () => {
                       <div className="absolute inset-0 bg-primary/10 scan-line"></div>
                     )}
                   </div>
-                  <style jsx>{`
+                  <style>
+                    {`
                     .fingerprint-pattern {
                       background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,15 C30,15 15,30 15,50 C15,70 30,85 50,85 C70,85 85,70 85,50 C85,30 70,15 50,15 Z M50,75 C35,75 25,65 25,50 C25,35 35,25 50,25 C65,25 75,35 75,50 C75,65 65,75 50,75 Z M50,65 C40,65 35,60 35,50 C35,40 40,35 50,35 C60,35 65,40 65,50 C65,60 60,65 50,65 Z M50,55 C45,55 45,55 45,50 C45,45 45,45 50,45 C55,45 55,45 55,50 C55,55 55,55 50,55 Z' fill='%23000' fill-opacity='0.1'/%3E%3C/svg%3E");
                       background-size: cover;
@@ -145,7 +146,8 @@ const Login = () => {
                       50% { opacity: 1; }
                       100% { opacity: 0.5; }
                     }
-                  `}</style>
+                    `}
+                  </style>
                 </button>
               </div>
             )}
