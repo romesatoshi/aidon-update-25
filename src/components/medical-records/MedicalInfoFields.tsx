@@ -1,129 +1,145 @@
 
-import { FormField } from "./FormField";
-import { FormData } from "./useFormState";
+import React, { ChangeEvent } from 'react';
+import { FormField } from './FormField';
 
 interface MedicalInfoFieldsProps {
-  formData: FormData;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  values: {
+    bloodGroup: string;
+    genotype: string;
+    hivStatus: string;
+    hepatitisStatus: string;
+    recentHospitalizations: string;
+    allergies: string;
+    conditions: string;
+    medications: string;
+    medicationDosage: string;
+    advanceDirectives: string;
+    organDonor: string;
+    notes: string;
+  };
+  onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
 }
 
-export function MedicalInfoFields({ formData, handleInputChange }: MedicalInfoFieldsProps) {
+export const MedicalInfoFields: React.FC<MedicalInfoFieldsProps> = ({ values, onChange }) => {
+  const bloodGroups = [
+    { value: "", label: "Select Blood Group" },
+    { value: "A+", label: "A+" },
+    { value: "A-", label: "A-" },
+    { value: "B+", label: "B+" },
+    { value: "B-", label: "B-" },
+    { value: "AB+", label: "AB+" },
+    { value: "AB-", label: "AB-" },
+    { value: "O+", label: "O+" },
+    { value: "O-", label: "O-" },
+  ];
+
+  const genotypeOptions = [
+    { value: "", label: "Select Genotype" },
+    { value: "AA", label: "AA" },
+    { value: "AS", label: "AS" },
+    { value: "SS", label: "SS" },
+    { value: "AC", label: "AC" },
+    { value: "SC", label: "SC" },
+  ];
+
+  const statusOptions = [
+    { value: "", label: "Select Status" },
+    { value: "Positive", label: "Positive" },
+    { value: "Negative", label: "Negative" },
+    { value: "Unknown", label: "Unknown" },
+  ];
+
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <FormField
-          id="bloodGroup"
-          label="Blood Group"
-          placeholder="e.g., A+, B-, O+"
-          value={formData.bloodGroup}
-          onChange={handleInputChange}
-          required
-        />
-        
-        <FormField
-          id="genotype"
-          label="Genotype"
-          placeholder="e.g., AA, AS, SS"
-          value={formData.genotype}
-          onChange={handleInputChange}
-        />
-        
-        <FormField
-          id="weight"
-          label="Weight (kg)"
-          placeholder="Weight in kilograms"
-          value={formData.weight}
-          onChange={handleInputChange}
-        />
-      </div>
+    <div className="space-y-4">
+      <FormField
+        id="bloodGroup"
+        label="Blood Group"
+        value={values.bloodGroup}
+        onChange={onChange}
+        options={bloodGroups}
+      />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField
-          id="hivStatus"
-          label="HIV Status"
-          type="select"
-          value={formData.hivStatus}
-          onChange={handleInputChange}
-          options={[
-            { value: "", label: "Select status" },
-            { value: "Positive", label: "Positive" },
-            { value: "Negative", label: "Negative" },
-            { value: "Unknown", label: "Unknown" }
-          ]}
-        />
-        
-        <FormField
-          id="hepatitisStatus"
-          label="Hepatitis Status"
-          type="select"
-          value={formData.hepatitisStatus}
-          onChange={handleInputChange}
-          options={[
-            { value: "", label: "Select status" },
-            { value: "Positive", label: "Positive" },
-            { value: "Negative", label: "Negative" },
-            { value: "Unknown", label: "Unknown" }
-          ]}
-        />
-      </div>
+      <FormField
+        id="genotype"
+        label="Genotype"
+        value={values.genotype}
+        onChange={onChange}
+        options={genotypeOptions}
+      />
+      
+      <FormField
+        id="hivStatus"
+        label="HIV Status"
+        value={values.hivStatus}
+        onChange={onChange}
+        options={statusOptions}
+      />
+      
+      <FormField
+        id="hepatitisStatus"
+        label="Hepatitis Status"
+        value={values.hepatitisStatus}
+        onChange={onChange}
+        options={statusOptions}
+      />
+      
+      <FormField
+        id="recentHospitalizations"
+        label="Recent Hospitalizations"
+        value={values.recentHospitalizations}
+        onChange={onChange}
+      />
       
       <FormField
         id="allergies"
         label="Allergies"
-        placeholder="Known allergies"
-        value={formData.allergies}
-        onChange={handleInputChange}
+        value={values.allergies}
+        onChange={onChange}
       />
       
       <FormField
         id="conditions"
         label="Medical Conditions"
-        placeholder="Existing medical conditions"
-        value={formData.conditions}
-        onChange={handleInputChange}
+        value={values.conditions}
+        onChange={onChange}
       />
       
       <FormField
         id="medications"
-        label="Current Medications"
-        placeholder="Current medications"
-        value={formData.medications}
-        onChange={handleInputChange}
+        label="Medications"
+        value={values.medications}
+        onChange={onChange}
       />
       
       <FormField
         id="medicationDosage"
         label="Medication Dosage"
-        placeholder="Dosage information for medications"
-        value={formData.medicationDosage}
-        onChange={handleInputChange}
-        multiline
+        value={values.medicationDosage}
+        onChange={onChange}
       />
       
       <FormField
-        id="recentHospitalizations"
-        label="Recent Hospitalizations/Surgeries"
-        placeholder="Hospitalizations or surgeries in the past year"
-        value={formData.recentHospitalizations}
-        onChange={handleInputChange}
-        multiline
+        id="advanceDirectives"
+        label="Advance Directives"
+        value={values.advanceDirectives}
+        onChange={onChange}
       />
       
       <FormField
-        id="primaryPhysician"
-        label="Primary Physician"
-        placeholder="Name and contact details of primary doctor"
-        value={formData.primaryPhysician}
-        onChange={handleInputChange}
+        id="organDonor"
+        label="Organ Donor"
+        value={values.organDonor}
+        onChange={onChange}
       />
       
       <FormField
-        id="healthInsurance"
-        label="Health Insurance Information"
-        placeholder="Provider, policy number, etc."
-        value={formData.healthInsurance}
-        onChange={handleInputChange}
+        id="notes"
+        label="Additional Notes"
+        value={values.notes}
+        onChange={onChange}
       />
-    </>
+    </div>
   );
-}
+};
+
+export default MedicalInfoFields;
