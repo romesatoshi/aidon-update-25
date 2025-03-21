@@ -62,7 +62,7 @@ export function decryptData(encryptedData: string): any {
 /**
  * Securely stores data in localStorage with encryption
  */
-export function secureLocalStorage = {
+export const secureLocalStorage = {
   setItem: (key: string, value: any) => {
     try {
       const encrypted = encryptData(value);
