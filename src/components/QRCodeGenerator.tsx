@@ -28,6 +28,9 @@ Code: ${medicalRecord.emergencyCode || "N/A"}
 Name: ${medicalRecord.fullName}
 Age: ${medicalRecord.age}
 Blood Group: ${medicalRecord.bloodGroup}
+Genotype: ${medicalRecord.genotype || "Not provided"}
+HIV Status: ${medicalRecord.hivStatus || "Not provided"}
+Hepatitis Status: ${medicalRecord.hepatitisStatus || "Not provided"}
 Allergies: ${medicalRecord.allergies || "None reported"}
 Medical Conditions: ${medicalRecord.conditions || "None reported"}
 Medications: ${medicalRecord.medications || "None reported"}

@@ -23,7 +23,10 @@ export interface MedicalRecord {
   emergencyPhone: string;
   notes: string;
   createdAt: string;
-  emergencyCode: string; // Added this field
+  emergencyCode: string;
+  genotype: string;
+  hivStatus: string;
+  hepatitisStatus: string;
 }
 
 export interface MedicalRecordFormProps { 

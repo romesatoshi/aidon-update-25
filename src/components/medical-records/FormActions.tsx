@@ -33,7 +33,7 @@ export function FormActions({ loading, isEditing, record }: FormActionsProps) {
               size="sm"
               className="gap-1"
             >
-              <Icons.key className="h-4 w-4" />
+              <Icons.qrCode className="h-4 w-4" />
               View Emergency Code
             </Button>
           </DialogTrigger>

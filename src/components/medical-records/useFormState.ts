@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { MedicalRecord } from "./types";
@@ -24,6 +25,9 @@ export interface FormData {
   emergencyContact: string;
   emergencyPhone: string;
   notes: string;
+  genotype: string;
+  hivStatus: string;
+  hepatitisStatus: string;
 }
 
 const generateEmergencyCode = (): string => {
@@ -67,7 +71,10 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     medicationDosage: "",
     emergencyContact: "",
     emergencyPhone: "",
-    notes: ""
+    notes: "",
+    genotype: "",
+    hivStatus: "",
+    hepatitisStatus: ""
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -95,7 +102,10 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
         medicationDosage: initialData.medicationDosage || "",
         emergencyContact: initialData.emergencyContact || "",
         emergencyPhone: initialData.emergencyPhone || "",
-        notes: initialData.notes || ""
+        notes: initialData.notes || "",
+        genotype: initialData.genotype || "",
+        hivStatus: initialData.hivStatus || "",
+        hepatitisStatus: initialData.hepatitisStatus || ""
       });
     }
   }, [initialData]);
@@ -168,7 +178,10 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
           medicationDosage: "",
           emergencyContact: "",
           emergencyPhone: "",
-          notes: ""
+          notes: "",
+          genotype: "",
+          hivStatus: "",
+          hepatitisStatus: ""
         });
       }
       
