@@ -24,6 +24,7 @@ const QRCodeGenerator = ({ medicalRecord }: QRCodeGeneratorProps) => {
 
   // Generate enhanced emergency information string with essential data including medical conditions
   const emergencyInfo = `EMERGENCY MEDICAL INFO:
+Code: ${medicalRecord.emergencyCode || "N/A"}
 Name: ${medicalRecord.fullName}
 Age: ${medicalRecord.age}
 Blood Group: ${medicalRecord.bloodGroup}

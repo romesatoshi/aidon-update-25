@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { MedicalRecord } from "./types";
@@ -27,6 +26,25 @@ export interface FormData {
   notes: string;
 }
 
+const generateEmergencyCode = (): string => {
+  const alphanumeric = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const numeric = '0123456789';
+  
+  let code = 'EM-';
+  
+  for (let i = 0; i < 2; i++) {
+    code += alphanumeric.charAt(Math.floor(Math.random() * alphanumeric.length));
+  }
+  
+  code += '-';
+  
+  for (let i = 0; i < 4; i++) {
+    code += numeric.charAt(Math.floor(Math.random() * numeric.length));
+  }
+  
+  return code;
+};
+
 export const useFormState = (initialData?: MedicalRecord, onSave?: (record: MedicalRecord) => void, onClose?: () => void) => {
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
@@ -54,7 +72,6 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   
-  // Load initial data if provided (for editing)
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -106,8 +123,7 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     setLoading(true);
     
     try {
-      // In a real app, this would save to your backend
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       const updatedRecord: MedicalRecord = initialData ? 
         {
@@ -117,10 +133,10 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
         {
           id: Date.now().toString(),
           ...formData,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          emergencyCode: generateEmergencyCode()
         };
 
-      // Call the onSave callback if provided
       if (onSave) {
         onSave(updatedRecord);
       }
@@ -131,7 +147,6 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
       });
       
       if (!initialData) {
-        // Only reset form if not editing
         setFormData({
           fullName: "",
           bloodGroup: "",
