@@ -1,7 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { secureLocalStorage } from "@/utils/encryption";
 
 interface User {
   id: string;
@@ -21,25 +20,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Simple password hashing function (not secure enough for production)
-const hashPassword = (password: string): string => {
-  let hash = 0;
-  for (let i = 0; i < password.length; i++) {
-    const char = password.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return hash.toString(16);
-};
-
-// Demo users with hashed passwords
+// For demo purposes - replace with real authentication
 const DEMO_USERS = [
-  { 
-    id: "1", 
-    name: "Test User", 
-    email: "test@example.com", 
-    password: hashPassword("password123") // Hashed version
-  }
+  { id: "1", name: "Test User", email: "test@example.com", password: "password123" }
 ];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -48,13 +31,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check secureLocalStorage for saved user session
-    const savedUser = secureLocalStorage.getItem("user");
+    // Check localStorage for saved user session
+    const savedUser = localStorage.getItem("user");
     if (savedUser) {
       try {
-        setUser(savedUser);
+        setUser(JSON.parse(savedUser));
       } catch (e) {
-        secureLocalStorage.removeItem("user");
+        localStorage.removeItem("user");
       }
     }
     setIsLoading(false);
@@ -66,18 +49,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Hash the input password
-    const hashedPassword = hashPassword(password);
-    
     // Find user (in a real app, this would be an API call)
     const foundUser = DEMO_USERS.find(
-      u => u.email === email && u.password === hashedPassword
+      u => u.email === email && u.password === password
     );
     
     if (foundUser) {
       const { password, ...userWithoutPassword } = foundUser;
       setUser(userWithoutPassword);
-      secureLocalStorage.setItem("user", userWithoutPassword);
+      localStorage.setItem("user", JSON.stringify(userWithoutPassword));
       toast({
         title: "Welcome back!",
         description: `Logged in as ${foundUser.name}`,
@@ -112,18 +92,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     // In a real app, this would create a user in the database
-    const hashedPassword = hashPassword(password);
     const newUser = { id: `${DEMO_USERS.length + 1}`, name, email };
-    
-    // Add user to "database" (would happen on server in real app)
-    DEMO_USERS.push({
-      ...newUser,
-      password: hashedPassword
-    });
     
     // Set the user
     setUser(newUser);
-    secureLocalStorage.setItem("user", newUser);
+    localStorage.setItem("user", JSON.stringify(newUser));
     
     toast({
       title: "Account created",
@@ -152,9 +125,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error("Email not found");
     }
     
-    // For demo purposes, "reset" the password to a known value
-    const newHashedPassword = hashPassword("reset123");
-    foundUser.password = newHashedPassword;
+    // In a real app, this would:
+    // 1. Generate a reset token
+    // 2. Email the user with a reset link
+    // 3. Not automatically reset the password
+    
+    // For demo purposes, we're "resetting" the password to a known value
+    foundUser.password = "reset123";
     
     toast({
       title: "Password reset",
@@ -166,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
-    secureLocalStorage.removeItem("user");
+    localStorage.removeItem("user");
     toast({
       title: "Logged out",
       description: "You have been logged out successfully",

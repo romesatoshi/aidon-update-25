@@ -49,40 +49,13 @@ export const MedicalInfoFields: React.FC<MedicalInfoFieldsProps> = ({ values, on
     { value: "Unknown", label: "Unknown" },
   ];
 
-  // Validation function for input fields
-  const validateInput = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    
-    // Sanitize input - basic XSS protection
-    const sanitizedValue = value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
-    
-    // Create a new event with the sanitized value
-    const sanitizedEvent = {
-      ...e,
-      target: {
-        ...e.target,
-        value: sanitizedValue,
-      },
-    } as ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
-    
-    // Pass the sanitized event to the original onChange handler
-    onChange(sanitizedEvent);
-  };
-
   return (
     <div className="space-y-4">
-      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-        <p className="text-sm text-yellow-700">
-          <strong>Privacy Notice:</strong> Medical information is stored locally on your device with basic encryption. 
-          For production use, a HIPAA-compliant backend would be required.
-        </p>
-      </div>
-      
       <FormField
         id="bloodGroup"
         label="Blood Group"
         value={values.bloodGroup}
-        onChange={validateInput}
+        onChange={onChange}
         options={bloodGroups}
       />
       
@@ -90,7 +63,7 @@ export const MedicalInfoFields: React.FC<MedicalInfoFieldsProps> = ({ values, on
         id="genotype"
         label="Genotype"
         value={values.genotype}
-        onChange={validateInput}
+        onChange={onChange}
         options={genotypeOptions}
       />
       
@@ -98,7 +71,7 @@ export const MedicalInfoFields: React.FC<MedicalInfoFieldsProps> = ({ values, on
         id="hivStatus"
         label="HIV Status"
         value={values.hivStatus}
-        onChange={validateInput}
+        onChange={onChange}
         options={statusOptions}
       />
       
@@ -106,7 +79,7 @@ export const MedicalInfoFields: React.FC<MedicalInfoFieldsProps> = ({ values, on
         id="hepatitisStatus"
         label="Hepatitis Status"
         value={values.hepatitisStatus}
-        onChange={validateInput}
+        onChange={onChange}
         options={statusOptions}
       />
       
@@ -114,56 +87,56 @@ export const MedicalInfoFields: React.FC<MedicalInfoFieldsProps> = ({ values, on
         id="recentHospitalizations"
         label="Recent Hospitalizations"
         value={values.recentHospitalizations}
-        onChange={validateInput}
+        onChange={onChange}
       />
       
       <FormField
         id="allergies"
         label="Allergies"
         value={values.allergies}
-        onChange={validateInput}
+        onChange={onChange}
       />
       
       <FormField
         id="conditions"
         label="Medical Conditions"
         value={values.conditions}
-        onChange={validateInput}
+        onChange={onChange}
       />
       
       <FormField
         id="medications"
         label="Medications"
         value={values.medications}
-        onChange={validateInput}
+        onChange={onChange}
       />
       
       <FormField
         id="medicationDosage"
         label="Medication Dosage"
         value={values.medicationDosage}
-        onChange={validateInput}
+        onChange={onChange}
       />
       
       <FormField
         id="advanceDirectives"
         label="Advance Directives"
         value={values.advanceDirectives}
-        onChange={validateInput}
+        onChange={onChange}
       />
       
       <FormField
         id="organDonor"
         label="Organ Donor"
         value={values.organDonor}
-        onChange={validateInput}
+        onChange={onChange}
       />
       
       <FormField
         id="notes"
         label="Additional Notes"
         value={values.notes}
-        onChange={validateInput}
+        onChange={onChange}
       />
     </div>
   );
