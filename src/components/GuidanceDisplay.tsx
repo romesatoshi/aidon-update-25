@@ -4,7 +4,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { cn } from "@/lib/utils";
 import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
 import Icons from "./Icons";
-import { useEffect, useState } from "react";
 
 interface GuidanceDisplayProps {
   guidance: string;
@@ -28,53 +27,14 @@ export function GuidanceDisplay({
   personalizedInfo
 }: GuidanceDisplayProps) {
   const { isSupported, isSpeaking, speak, cancel } = useSpeechSynthesis();
-  const [isOffline, setIsOffline] = useState(false);
-  const [savedGuidance, setSavedGuidance] = useState<string | null>(null);
-  const [savedAdditionalInfo, setSavedAdditionalInfo] = useState<Record<string, string> | null>(null);
-
-  // Check if the browser is online or offline
-  useEffect(() => {
-    const updateOnlineStatus = () => {
-      setIsOffline(!navigator.onLine);
-    };
-
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-    updateOnlineStatus();
-
-    return () => {
-      window.removeEventListener('online', updateOnlineStatus);
-      window.removeEventListener('offline', updateOnlineStatus);
-    };
-  }, []);
-
-  // Load saved guidance from localStorage when offline
-  useEffect(() => {
-    if (isOffline && !guidance) {
-      const savedData = localStorage.getItem('offlineGuidance');
-      if (savedData) {
-        const parsed = JSON.parse(savedData);
-        setSavedGuidance(parsed.guidance);
-        setSavedAdditionalInfo(parsed.additionalInfo);
-      }
-    } else if (guidance) {
-      // Save current guidance for offline use
-      localStorage.setItem('offlineGuidance', JSON.stringify({
-        guidance,
-        additionalInfo,
-        timestamp: new Date().toISOString()
-      }));
-    }
-  }, [isOffline, guidance, additionalInfo]);
 
   const handleSpeak = () => {
-    let textToSpeak = guidance || savedGuidance || "";
+    let textToSpeak = guidance;
     
     // Add additional info to speech if available
-    const infoToUse = additionalInfo || savedAdditionalInfo;
-    if (infoToUse && Object.keys(infoToUse).length > 0) {
+    if (additionalInfo && Object.keys(additionalInfo).length > 0) {
       textToSpeak += ". Additional information: ";
-      for (const [question, answer] of Object.entries(infoToUse)) {
+      for (const [question, answer] of Object.entries(additionalInfo)) {
         if (answer.trim()) {
           textToSpeak += `${question}: ${answer}. `;
         }
@@ -93,12 +53,6 @@ export function GuidanceDisplay({
       if (personalizedInfo.genotype) {
         textToSpeak += `Your genotype is ${personalizedInfo.genotype}. `;
       }
-      if (personalizedInfo.hivStatus) {
-        textToSpeak += `Your HIV status is ${personalizedInfo.hivStatus}. `;
-      }
-      if (personalizedInfo.hepatitisStatus) {
-        textToSpeak += `Your Hepatitis status is ${personalizedInfo.hepatitisStatus}. `;
-      }
     }
     
     if (isSpeaking) {
@@ -108,26 +62,19 @@ export function GuidanceDisplay({
     }
   };
 
-  if (!guidance && !savedGuidance && !isOffline) return null;
-
-  const displayGuidance = guidance || savedGuidance || "";
+  if (!guidance) return null;
 
   return (
     <Card className={cn("animate-scale-in border-l-4 border-l-primary", className)}>
       <CardHeader className="pb-2">
         <CardTitle className="text-xl flex items-center">
           <Icons.emergency className="mr-2 h-5 w-5 text-emergency" />
-          {isOffline && !guidance ? "Offline Emergency Guidance" : "Emergency Guidance"}
-          {isOffline && (
-            <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-              Offline Mode
-            </span>
-          )}
+          Emergency Guidance
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <p className="text-balance">{displayGuidance}</p>
+          <p className="text-balance">{guidance}</p>
           
           {personalizedInfo && Object.values(personalizedInfo).some(value => value && (Array.isArray(value) ? value.length > 0 : true)) && (
             <div className="mt-4 pt-4 border-t">
@@ -167,11 +114,11 @@ export function GuidanceDisplay({
             </div>
           )}
           
-          {(additionalInfo || savedAdditionalInfo) && Object.keys(additionalInfo || savedAdditionalInfo || {}).length > 0 && (
+          {additionalInfo && Object.keys(additionalInfo).length > 0 && (
             <div className="mt-4 pt-4 border-t">
               <h3 className="font-medium text-sm mb-2">Additional Information:</h3>
               <ul className="space-y-2 text-sm">
-                {Object.entries(additionalInfo || savedAdditionalInfo || {}).map(([question, answer], index) => (
+                {Object.entries(additionalInfo).map(([question, answer], index) => (
                   answer.trim() ? (
                     <li key={index} className="grid grid-cols-1 gap-1">
                       <span className="font-medium">{question}</span>

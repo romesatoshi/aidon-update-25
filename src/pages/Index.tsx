@@ -17,7 +17,6 @@ import {
   DialogDescription,
   DialogFooter
 } from "@/components/ui/dialog";
-import { MedicalRecord } from "@/components/medical-records/types";
 
 const Index = () => {
   const [emergency, setEmergency] = useState("");
@@ -29,7 +28,6 @@ const Index = () => {
     return savedCount ? parseInt(savedCount, 0) : 0;
   });
   const [showSignInPrompt, setShowSignInPrompt] = useState(false);
-  const [selectedMedicalRecord, setSelectedMedicalRecord] = useState<MedicalRecord | null>(null);
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
   const { 
@@ -65,13 +63,6 @@ const Index = () => {
       setShowSignInPrompt(true);
     }
   }, [searchCount, isAuthenticated]);
-
-  // Select the first medical record by default if user is authenticated
-  useEffect(() => {
-    if (isAuthenticated && data.medicalRecords?.length > 0 && !selectedMedicalRecord) {
-      setSelectedMedicalRecord(data.medicalRecords[0]);
-    }
-  }, [isAuthenticated, data.medicalRecords, selectedMedicalRecord]);
 
   const handleEmergencySubmit = async (text: string) => {
     setEmergency(text);
@@ -145,9 +136,8 @@ const Index = () => {
     });
   };
 
-  const handleSaveMedicalRecord = (record: MedicalRecord) => {
+  const handleSaveMedicalRecord = (record: any) => {
     addMedicalRecord(record);
-    setSelectedMedicalRecord(record);
     
     toast({
       title: "Medical record saved",
@@ -155,27 +145,9 @@ const Index = () => {
     });
   };
 
-  const handleSelectMedicalRecord = (record: MedicalRecord) => {
-    setSelectedMedicalRecord(record);
-    
-    toast({
-      title: "Medical record selected",
-      description: `Selected: "${record.fullName}"`,
-    });
-  };
-
   const closeSignInPrompt = () => {
     setShowSignInPrompt(false);
   };
-
-  // Prepare personalized medical information if a record is selected
-  const personalizedInfo = selectedMedicalRecord ? {
-    medicalConditions: selectedMedicalRecord.conditions ? selectedMedicalRecord.conditions.split(',').map(c => c.trim()) : [],
-    bloodGroup: selectedMedicalRecord.bloodGroup,
-    genotype: selectedMedicalRecord.genotype,
-    hivStatus: selectedMedicalRecord.hivStatus,
-    hepatitisStatus: selectedMedicalRecord.hepatitisStatus,
-  } : undefined;
 
   return (
     <div className="min-h-screen transition-colors duration-300 relative">
@@ -186,8 +158,6 @@ const Index = () => {
         onSaveMedicalRecord={handleSaveMedicalRecord}
         onEditMedicalRecord={editMedicalRecord}
         onDeleteMedicalRecord={deleteMedicalRecord}
-        onSelectMedicalRecord={handleSelectMedicalRecord}
-        selectedRecordId={selectedMedicalRecord?.id}
       />
       
       <div className="container max-w-3xl mx-auto p-4 md:p-6 lg:p-8">
@@ -238,7 +208,6 @@ const Index = () => {
             onReset={handleReset} 
             className="mb-6"
             additionalInfo={additionalInfo}
-            personalizedInfo={personalizedInfo}
           />
         )}
         
