@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,22 +15,18 @@ import AITraining from "./pages/AITraining";
 
 const queryClient = new QueryClient();
 
-// Add an AdminRoute component to check for admin permissions
+// Add an AdminRoute component with stronger security checks
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const checkAdmin = () => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      try {
-        const user = JSON.parse(savedUser);
-        return user.email === "test@example.com";
-      } catch (e) {
-        return false;
-      }
-    }
-    return false;
+  const { user, isAuthenticated } = useAuth();
+  
+  const isAdmin = () => {
+    if (!isAuthenticated || !user) return false;
+    
+    // Check if user has admin email (in a real app, this would check roles/permissions)
+    return user.email === "test@example.com";
   };
   
-  return checkAdmin() ? <>{children}</> : <Navigate to="/" replace />;
+  return isAdmin() ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 const App = () => (
@@ -64,7 +59,6 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
