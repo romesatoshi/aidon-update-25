@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -77,6 +76,9 @@ const Index = () => {
     setAdditionalInfo({}); // Reset additional info when new search is submitted
     setPersonalizedInfo(undefined); // Reset personalized info
     
+    // Reset follow-up skip count when user makes a new search
+    localStorage.setItem("followUpSkipCount", "0");
+    
     try {
       const guidanceText = await requestGuidance(text);
       setGuidance(guidanceText);
@@ -104,6 +106,8 @@ const Index = () => {
     setShowFollowUp(false);
     setAdditionalInfo({});
     setPersonalizedInfo(undefined);
+    // Reset follow-up skip count when user starts a new search
+    localStorage.setItem("followUpSkipCount", "0");
   };
 
   const handleFollowUpSubmit = (additionalDetails: Record<string, string>) => {

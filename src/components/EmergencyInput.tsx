@@ -94,6 +94,9 @@ export function EmergencyInput({
   const [currentQuestions, setCurrentQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [calmingMessage, setCalmingMessage] = useState("");
+  const [skipCount, setSkipCount] = useState(() => {
+    return parseInt(localStorage.getItem("followUpSkipCount") || "0", 10);
+  });
   
   const { 
     isListening, 
@@ -110,13 +113,13 @@ export function EmergencyInput({
 
   // Effect to set drawer open state when showFollowUp changes
   useEffect(() => {
-    if (showFollowUp) {
+    if (showFollowUp && skipCount < 2) {
       determineFollowUpQuestions(emergencyText);
       setIsDrawerOpen(true);
     } else {
       setIsDrawerOpen(false);
     }
-  }, [showFollowUp, emergencyText]);
+  }, [showFollowUp, emergencyText, skipCount]);
 
   useEffect(() => {
     if (transcript) {
@@ -186,6 +189,11 @@ export function EmergencyInput({
 
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
+    // Increment skip count when user skips questions
+    const newSkipCount = skipCount + 1;
+    setSkipCount(newSkipCount);
+    localStorage.setItem("followUpSkipCount", newSkipCount.toString());
+    
     if (onFollowUpSubmit) {
       onFollowUpSubmit({});  // Submit empty answers if user closes without answering
     }
