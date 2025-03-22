@@ -131,6 +131,7 @@ const Index = () => {
       });
     }
     
+    // Ensure follow-up questions don't appear again after submission
     setShowFollowUp(false);
   };
 

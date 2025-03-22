@@ -187,7 +187,7 @@ export function EmergencyInput({
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
     if (onFollowUpSubmit) {
-      onFollowUpSubmit({}); // Submit empty answers if user closes without answering
+      onFollowUpSubmit({});  // Submit empty answers if user closes without answering
     }
   };
 
