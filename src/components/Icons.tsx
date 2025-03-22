@@ -7,6 +7,7 @@ import {
   Database, 
   Edit,
   FileText,
+  Info,
   Loader2, 
   LogOut, 
   Menu,
@@ -47,6 +48,7 @@ const Icons = {
   emergency: AlertTriangle, // Using AlertTriangle as a substitute for Emergency
   fileText: FileText,
   home: Home,
+  info: Info, // Add the info icon
   loader: Loader2,
   login: LogIn,
   logout: LogOut,

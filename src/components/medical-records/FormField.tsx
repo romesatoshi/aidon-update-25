@@ -8,14 +8,15 @@ import { cn } from "@/lib/utils";
 export interface FormFieldProps {
   id: string;
   label: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   placeholder?: string;
   type?: string;
   required?: boolean;
   multiline?: boolean;
   className?: string;
   options?: { value: string; label: string }[];
+  children?: React.ReactNode; // Add support for children
 }
 
 export function FormField({ 
@@ -28,7 +29,8 @@ export function FormField({
   required = false,
   multiline = false,
   className = "",
-  options = []
+  options = [],
+  children
 }: FormFieldProps) {
   return (
     <div className={cn("space-y-2", className)}>
@@ -40,7 +42,9 @@ export function FormField({
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       
-      {multiline ? (
+      {children ? (
+        children
+      ) : multiline ? (
         <Textarea
           id={id}
           name={id}
@@ -63,7 +67,7 @@ export function FormField({
                 value: newValue
               }
             } as React.ChangeEvent<HTMLSelectElement>;
-            onChange(syntheticEvent);
+            onChange?.(syntheticEvent);
           }}
         >
           <SelectTrigger className="w-full">
