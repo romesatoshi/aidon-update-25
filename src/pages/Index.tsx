@@ -9,6 +9,7 @@ import useEmergencyData from "@/hooks/useEmergencyData";
 import Icons from "@/components/Icons";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { MedicalRecord } from "@/components/medical-records/types";
 import { 
   Dialog,
   DialogContent,
@@ -23,6 +24,13 @@ const Index = () => {
   const [guidance, setGuidance] = useState("");
   const [showFollowUp, setShowFollowUp] = useState(false);
   const [additionalInfo, setAdditionalInfo] = useState<Record<string, string>>({});
+  const [personalizedInfo, setPersonalizedInfo] = useState<{
+    medicalConditions?: string[];
+    bloodGroup?: string;
+    genotype?: string;
+    hivStatus?: string;
+    hepatitisStatus?: string;
+  } | undefined>(undefined);
   const [searchCount, setSearchCount] = useState(() => {
     const savedCount = localStorage.getItem("emergencySearchCount");
     return savedCount ? parseInt(savedCount, 0) : 0;
@@ -67,6 +75,7 @@ const Index = () => {
   const handleEmergencySubmit = async (text: string) => {
     setEmergency(text);
     setAdditionalInfo({}); // Reset additional info when new search is submitted
+    setPersonalizedInfo(undefined); // Reset personalized info
     
     try {
       const guidanceText = await requestGuidance(text);
@@ -94,6 +103,7 @@ const Index = () => {
     setGuidance("");
     setShowFollowUp(false);
     setAdditionalInfo({});
+    setPersonalizedInfo(undefined);
   };
 
   const handleFollowUpSubmit = (additionalDetails: Record<string, string>) => {
@@ -128,6 +138,7 @@ const Index = () => {
     setEmergency(entry.emergency);
     setGuidance(entry.guidance);
     setAdditionalInfo(entry.additionalInfo || {});
+    setPersonalizedInfo(undefined); // Reset personalized info
     setShowFollowUp(false);
     
     toast({
@@ -143,6 +154,29 @@ const Index = () => {
       title: "Medical record saved",
       description: "Your medical information has been saved successfully.",
     });
+  };
+
+  const handlePersonalizeGuidance = (record: MedicalRecord | null) => {
+    if (record) {
+      // Extract relevant medical information for personalization
+      const conditions = record.conditions ? record.conditions.split(',').map(c => c.trim()) : [];
+      
+      setPersonalizedInfo({
+        medicalConditions: conditions,
+        bloodGroup: record.bloodGroup,
+        genotype: record.genotype,
+        hivStatus: record.hivStatus,
+        hepatitisStatus: record.hepatitisStatus
+      });
+      
+      toast({
+        title: "Guidance personalized",
+        description: `Medical profile for ${record.fullName} applied to guidance.`,
+      });
+    } else {
+      // Reset personalized info if no record is selected
+      setPersonalizedInfo(undefined);
+    }
   };
 
   const closeSignInPrompt = () => {
@@ -208,6 +242,9 @@ const Index = () => {
             onReset={handleReset} 
             className="mb-6"
             additionalInfo={additionalInfo}
+            personalizedInfo={personalizedInfo}
+            medicalRecords={data.medicalRecords}
+            onPersonalizeGuidance={handlePersonalizeGuidance}
           />
         )}
         
