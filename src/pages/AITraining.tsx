@@ -26,7 +26,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import Icons from "@/components/Icons";
 import AIMetricsChart from "@/components/ai-training/AIMetricsChart";
-import TrainingDataForm from "@/components/ai-training/TrainingDataForm";
+import TrainingDataForm, { TrainingData } from "@/components/ai-training/TrainingDataForm";
 
 const AITraining = () => {
   const { isAuthenticated, user } = useAuth();
@@ -42,14 +42,40 @@ const AITraining = () => {
     recall: 0.79,
     f1Score: 0.80
   });
+  const [trainingData, setTrainingData] = useState<TrainingData[]>([]);
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
     }
+    
+    // Load any saved training data from localStorage
+    const savedTrainingData = localStorage.getItem('aiTrainingData');
+    if (savedTrainingData) {
+      try {
+        setTrainingData(JSON.parse(savedTrainingData));
+      } catch (error) {
+        console.error('Failed to parse training data:', error);
+      }
+    }
   }, [isAuthenticated, navigate]);
 
+  // Save training data to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('aiTrainingData', JSON.stringify(trainingData));
+  }, [trainingData]);
+
   const startTraining = () => {
+    if (trainingData.length === 0 && data.history.length === 0) {
+      toast({
+        title: "No Training Data",
+        description: "Please add at least one training scenario before starting the training process.",
+        variant: "destructive",
+      });
+      setActiveTab("data");
+      return;
+    }
+
     setTrainingStatus("training");
     setTrainingProgress(0);
     
@@ -61,17 +87,21 @@ const AITraining = () => {
           clearInterval(interval);
           setTrainingStatus("completed");
           
+          // Calculate improvement based on amount of training data
+          const dataPoints = trainingData.length + Math.min(data.history.length, 5);
+          const improvementFactor = Math.min(0.1, dataPoints * 0.01);
+          
           // Simulate improved metrics after training
           setMetrics({
-            accuracy: Math.min(0.98, metrics.accuracy + Math.random() * 0.05),
-            precision: Math.min(0.97, metrics.precision + Math.random() * 0.06),
-            recall: Math.min(0.95, metrics.recall + Math.random() * 0.07),
-            f1Score: Math.min(0.96, metrics.f1Score + Math.random() * 0.06)
+            accuracy: Math.min(0.98, metrics.accuracy + improvementFactor),
+            precision: Math.min(0.97, metrics.precision + improvementFactor),
+            recall: Math.min(0.95, metrics.recall + improvementFactor * 1.1),
+            f1Score: Math.min(0.96, metrics.f1Score + improvementFactor * 0.9)
           });
           
           toast({
             title: "Training Completed",
-            description: "The AI model has been successfully trained with the new data.",
+            description: `The AI model has been successfully trained with ${dataPoints} scenarios.`,
           });
           
           return 100;
@@ -81,10 +111,19 @@ const AITraining = () => {
     }, 500);
   };
 
-  const handleAddTrainingData = (data: any) => {
+  const handleAddTrainingData = (data: TrainingData) => {
+    setTrainingData((prevData) => [...prevData, data]);
     toast({
       title: "Training Data Added",
       description: "Your custom emergency scenario has been added to the training dataset.",
+    });
+  };
+
+  const removeTrainingData = (index: number) => {
+    setTrainingData((prevData) => prevData.filter((_, i) => i !== index));
+    toast({
+      title: "Training Data Removed",
+      description: "The scenario has been removed from the training dataset.",
     });
   };
 
@@ -177,9 +216,10 @@ const AITraining = () => {
             <CardHeader>
               <CardTitle>Training Status</CardTitle>
               <CardDescription>
-                {trainingStatus === "idle" ? "Ready to train" : 
-                 trainingStatus === "training" ? "Training in progress..." : 
-                 "Training completed"}
+                {trainingStatus === "idle" ? 
+                  `Ready to train with ${trainingData.length + Math.min(data.history.length, 5)} scenarios` : 
+                  trainingStatus === "training" ? "Training in progress..." : 
+                  "Training completed"}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -229,25 +269,45 @@ const AITraining = () => {
                     <TableHead>Emergency</TableHead>
                     <TableHead>Guidance</TableHead>
                     <TableHead className="w-[100px]">Source</TableHead>
+                    <TableHead className="w-[80px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+                  {trainingData.map((entry, index) => (
+                    <TableRow key={`custom-${index}`}>
+                      <TableCell className="font-medium">{entry.emergencyScenario}</TableCell>
+                      <TableCell className="max-w-md truncate">{entry.expectedGuidance}</TableCell>
+                      <TableCell>{entry.source === 'manual' ? 'Custom' : entry.source}</TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => removeTrainingData(index)}
+                        >
+                          <Icons.trash className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                   {data.history.slice(0, 5).map((entry, index) => (
-                    <TableRow key={index}>
+                    <TableRow key={`history-${index}`}>
                       <TableCell className="font-medium">{entry.emergency}</TableCell>
                       <TableCell className="max-w-md truncate">{entry.guidance}</TableCell>
                       <TableCell>User Query</TableCell>
+                      <TableCell></TableCell>
                     </TableRow>
                   ))}
                   <TableRow>
                     <TableCell className="font-medium">Severe Allergic Reaction</TableCell>
                     <TableCell className="max-w-md truncate">Look for signs of anaphylaxis. If available, help them use their epinephrine auto-injector. Call emergency services immediately.</TableCell>
                     <TableCell>Expert</TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Diabetic Emergency</TableCell>
                     <TableCell className="max-w-md truncate">If conscious and able to swallow, give them sugar. If unconscious, place in recovery position and call emergency services.</TableCell>
                     <TableCell>Expert</TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                 </TableBody>
               </Table>

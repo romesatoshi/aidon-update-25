@@ -13,8 +13,16 @@ import { FormField } from "@/components/medical-records/FormField";
 import { useToast } from "@/hooks/use-toast";
 import Icons from "@/components/Icons";
 
+export interface TrainingData {
+  emergencyScenario: string;
+  category: string;
+  expectedGuidance: string;
+  source: string;
+  timestamp: string;
+}
+
 interface TrainingDataFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: TrainingData) => void;
 }
 
 const emergencyCategories = [
@@ -71,7 +79,7 @@ const TrainingDataForm = ({ onSubmit }: TrainingDataFormProps) => {
         required
       >
         <Textarea
-          placeholder="Describe an emergency scenario in detail (e.g., Child has fallen from bicycle and has a deep cut on knee)"
+          placeholder="Describe an emergency scenario in detail (e.g., 'Child has fallen from bicycle and has a deep cut on knee')"
           value={formData.emergencyScenario}
           onChange={(e) => setFormData({ ...formData, emergencyScenario: e.target.value })}
           className="min-h-[80px]"
