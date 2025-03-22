@@ -1,4 +1,3 @@
-
 import { FormField } from "./FormField";
 import { FormData } from "./useFormState";
 
@@ -45,10 +44,9 @@ export function MedicalInfoFields({ formData, handleInputChange }: MedicalInfoFi
           value={formData.hivStatus}
           onChange={handleInputChange}
           options={[
-            { value: "", label: "Select status" },
+            { value: "Unknown", label: "Select status" },
             { value: "Positive", label: "Positive" },
-            { value: "Negative", label: "Negative" },
-            { value: "Unknown", label: "Unknown" }
+            { value: "Negative", label: "Negative" }
           ]}
         />
         
@@ -59,10 +57,9 @@ export function MedicalInfoFields({ formData, handleInputChange }: MedicalInfoFi
           value={formData.hepatitisStatus}
           onChange={handleInputChange}
           options={[
-            { value: "", label: "Select status" },
+            { value: "Unknown", label: "Select status" },
             { value: "Positive", label: "Positive" },
-            { value: "Negative", label: "Negative" },
-            { value: "Unknown", label: "Unknown" }
+            { value: "Negative", label: "Negative" }
           ]}
         />
       </div>

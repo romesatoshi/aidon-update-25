@@ -47,7 +47,7 @@ export function PersonalInfoFields({ formData, handleInputChange }: PersonalInfo
             onChange={handleInputChange}
             className="rounded-md border border-input px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
           >
-            <option value="">Select</option>
+            <option value="none">Select</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
             <option value="Other">Other</option>
@@ -99,7 +99,7 @@ export function PersonalInfoFields({ formData, handleInputChange }: PersonalInfo
             onChange={handleInputChange}
             className="rounded-md border border-input px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
           >
-            <option value="">Select</option>
+            <option value="none">Select</option>
             <option value="Single">Single</option>
             <option value="Married">Married</option>
             <option value="Divorced">Divorced</option>
@@ -120,7 +120,7 @@ export function PersonalInfoFields({ formData, handleInputChange }: PersonalInfo
             onChange={handleInputChange}
             className="rounded-md border border-input px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
           >
-            <option value="">Select</option>
+            <option value="none">Select</option>
             <option value="Yes">Yes</option>
             <option value="No">No</option>
             <option value="Unknown">Unknown</option>
@@ -136,7 +136,7 @@ export function PersonalInfoFields({ formData, handleInputChange }: PersonalInfo
             onChange={handleInputChange}
             className="rounded-md border border-input px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
           >
-            <option value="">Select</option>
+            <option value="none">Select</option>
             <option value="Yes, DNR">Yes, DNR (Do Not Resuscitate)</option>
             <option value="Yes, Living Will">Yes, Living Will</option>
             <option value="Yes, Healthcare Proxy">Yes, Healthcare Proxy</option>

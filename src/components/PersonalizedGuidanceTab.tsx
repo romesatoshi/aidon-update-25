@@ -58,14 +58,14 @@ export function PersonalizedGuidanceTab({
         ) : (
           <>
             <Select
-              value={selectedRecordId || ""}
+              value={selectedRecordId || "none"}
               onValueChange={handleRecordSelect}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a medical record" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None - General guidance</SelectItem>
+                <SelectItem value="none">None - General guidance</SelectItem>
                 {medicalRecords.map((record) => (
                   <SelectItem key={record.id} value={record.id}>
                     {record.fullName || "Unnamed Record"}
