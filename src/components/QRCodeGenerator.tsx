@@ -12,6 +12,12 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import Icons from './Icons';
 import { MedicalRecord } from './medical-records/types';
 
@@ -37,9 +43,17 @@ Medications: ${medicalRecord.medications || "None reported"}
 Emergency Contact: ${medicalRecord.emergencyContact || "Not provided"}
 Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}`;
 
+  // Generate a more concise version for quick identification
+  const quickIdInfo = `EMERGENCY ID:
+Code: ${medicalRecord.emergencyCode || "N/A"}
+Name: ${medicalRecord.fullName}
+Age: ${medicalRecord.age}
+Blood: ${medicalRecord.bloodGroup}
+Emergency: ${medicalRecord.emergencyPhone || "Not provided"}`;
+
   // Function to copy text to clipboard
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(emergencyInfo)
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
       .then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -72,24 +86,51 @@ Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}`;
             )}
           </DialogDescription>
         </DialogHeader>
-        <div className="flex items-center justify-center p-4">
-          <div className="bg-white p-4 rounded-md">
-            <QRCodeSVG 
-              value={emergencyInfo}
-              size={200}
-              level="H"
-              includeMargin={true}
-            />
-          </div>
-        </div>
-        <div className="bg-muted p-4 rounded-md max-h-32 overflow-y-auto">
-          <pre className="text-xs whitespace-pre-wrap">{emergencyInfo}</pre>
-        </div>
+        
+        <Tabs defaultValue="quick" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="quick">Quick ID</TabsTrigger>
+            <TabsTrigger value="full">Full Details</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="quick" className="space-y-4">
+            <div className="flex items-center justify-center p-4">
+              <div className="bg-white p-4 rounded-md">
+                <QRCodeSVG 
+                  value={quickIdInfo}
+                  size={200}
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
+            </div>
+            <div className="bg-muted p-4 rounded-md max-h-32 overflow-y-auto">
+              <pre className="text-xs whitespace-pre-wrap">{quickIdInfo}</pre>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="full" className="space-y-4">
+            <div className="flex items-center justify-center p-4">
+              <div className="bg-white p-4 rounded-md">
+                <QRCodeSVG 
+                  value={emergencyInfo}
+                  size={200}
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
+            </div>
+            <div className="bg-muted p-4 rounded-md max-h-32 overflow-y-auto">
+              <pre className="text-xs whitespace-pre-wrap">{emergencyInfo}</pre>
+            </div>
+          </TabsContent>
+        </Tabs>
+
         <DialogFooter className="flex flex-col sm:flex-row gap-2">
           <Button
             type="button"
             variant="outline"
-            onClick={copyToClipboard}
+            onClick={() => copyToClipboard(emergencyInfo)}
             className="w-full sm:w-auto"
           >
             {copied ? (
