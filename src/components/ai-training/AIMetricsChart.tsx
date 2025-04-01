@@ -1,7 +1,26 @@
 
+import { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const mockTrainingData = [
+interface TrainingMetrics {
+  name: string;
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1Score: number;
+}
+
+interface AIMetricsChartProps {
+  initialData?: TrainingMetrics[];
+  latestMetrics?: {
+    accuracy: number;
+    precision: number;
+    recall: number;
+    f1Score: number;
+  };
+}
+
+const defaultTrainingData: TrainingMetrics[] = [
   {
     name: 'Baseline',
     accuracy: 0.72,
@@ -37,20 +56,46 @@ const mockTrainingData = [
     recall: 0.81,
     f1Score: 0.82,
   },
-  {
-    name: 'Training 5',
-    accuracy: 0.90,
-    precision: 0.88,
-    recall: 0.85,
-    f1Score: 0.86,
-  },
 ];
 
-const AIMetricsChart = () => {
+const AIMetricsChart = ({ initialData, latestMetrics }: AIMetricsChartProps) => {
+  const [chartData, setChartData] = useState<TrainingMetrics[]>(initialData || defaultTrainingData);
+
+  useEffect(() => {
+    // If we have new metrics, add them to the chart
+    if (latestMetrics) {
+      setChartData(prevData => {
+        const newTraining = {
+          name: `Training ${prevData.length}`,
+          ...latestMetrics
+        };
+        return [...prevData, newTraining];
+      });
+    }
+  }, [latestMetrics]);
+
+  // Load saved chart data from localStorage if available
+  useEffect(() => {
+    const savedData = localStorage.getItem('aiTrainingMetrics');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setChartData(parsedData);
+      } catch (error) {
+        console.error('Failed to parse saved metrics:', error);
+      }
+    }
+  }, []);
+
+  // Save chart data to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('aiTrainingMetrics', JSON.stringify(chartData));
+  }, [chartData]);
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
-        data={mockTrainingData}
+        data={chartData}
         margin={{
           top: 5,
           right: 30,
