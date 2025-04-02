@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -206,6 +207,8 @@ const Index = () => {
             <span className="hidden xs:inline">Aid-On: Medical Guidance Assistant</span>
             <span className="xs:hidden">Aid-On</span>
           </h1>
+          
+          {/* Moved the authentication button to the header, with clearer positioning */}
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
@@ -223,7 +226,11 @@ const Index = () => {
               </div>
             ) : (
               <Link to="/login">
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1 bg-background hover:bg-primary hover:text-primary-foreground border-primary/30 text-primary"
+                >
                   <Icons.login className="h-4 w-4 sm:mr-1" />
                   <span className="hidden sm:inline">Sign In</span>
                 </Button>
