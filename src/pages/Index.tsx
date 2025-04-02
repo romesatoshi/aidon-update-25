@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -17,7 +18,6 @@ import {
   DialogDescription,
   DialogFooter
 } from "@/components/ui/dialog";
-import EditWithLovableOverlay from "@/components/EditWithLovableOverlay";
 
 const Index = () => {
   const [emergency, setEmergency] = useState("");
@@ -191,8 +191,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen transition-colors duration-300 relative">
-      <EditWithLovableOverlay />
-      
       <UserSidebar 
         history={data.history} 
         medicalRecords={data.medicalRecords || []}
@@ -210,6 +208,7 @@ const Index = () => {
             <span className="xs:hidden">Aid-On</span>
           </h1>
           
+          {/* Moved the authentication button to the header, with clearer positioning */}
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
