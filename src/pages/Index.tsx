@@ -10,6 +10,7 @@ import Icons from "@/components/Icons";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { MedicalRecord } from "@/components/medical-records/types";
+import AutoDismissLovableBadge from "@/components/AutoDismissLovableBadge";
 import { 
   Dialog,
   DialogContent,
@@ -191,6 +192,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen transition-colors duration-300 relative">
+      <AutoDismissLovableBadge />
       <UserSidebar 
         history={data.history} 
         medicalRecords={data.medicalRecords || []}
