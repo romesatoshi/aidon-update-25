@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -205,12 +204,10 @@ const Index = () => {
       <div className="container max-w-3xl mx-auto p-4 md:p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
-            <Icons.emergency className="mr-2 h-6 w-6 text-emergency" />
             <span className="hidden xs:inline">Aid-On: Medical Guidance Assistant</span>
             <span className="xs:hidden">Aid-On</span>
           </h1>
           
-          {/* Moved the authentication button to the header, with clearer positioning */}
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
