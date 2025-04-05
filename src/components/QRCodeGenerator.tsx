@@ -12,12 +12,6 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 import Icons from './Icons';
 import { MedicalRecord } from './medical-records/types';
 
@@ -28,28 +22,13 @@ interface QRCodeGeneratorProps {
 const QRCodeGenerator = ({ medicalRecord }: QRCodeGeneratorProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Generate enhanced emergency information string with essential data including medical conditions
+  // Generate limited emergency information with only essential data
   const emergencyInfo = `EMERGENCY MEDICAL INFO:
-Code: ${medicalRecord.emergencyCode || "N/A"}
 Name: ${medicalRecord.fullName}
 Age: ${medicalRecord.age}
-Blood Group: ${medicalRecord.bloodGroup}
-Genotype: ${medicalRecord.genotype || "Not provided"}
-HIV Status: ${medicalRecord.hivStatus || "Not provided"}
-Hepatitis Status: ${medicalRecord.hepatitisStatus || "Not provided"}
 Allergies: ${medicalRecord.allergies || "None reported"}
-Medical Conditions: ${medicalRecord.conditions || "None reported"}
 Medications: ${medicalRecord.medications || "None reported"}
-Emergency Contact: ${medicalRecord.emergencyContact || "Not provided"}
 Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}`;
-
-  // Generate a more concise version for quick identification
-  const quickIdInfo = `EMERGENCY ID:
-Code: ${medicalRecord.emergencyCode || "N/A"}
-Name: ${medicalRecord.fullName}
-Age: ${medicalRecord.age}
-Blood: ${medicalRecord.bloodGroup}
-Emergency: ${medicalRecord.emergencyPhone || "Not provided"}`;
 
   // Function to copy text to clipboard
   const copyToClipboard = (text: string) => {
@@ -78,55 +57,27 @@ Emergency: ${medicalRecord.emergencyPhone || "Not provided"}`;
         <DialogHeader>
           <DialogTitle>Emergency Medical QR Code</DialogTitle>
           <DialogDescription>
-            Scan this QR code to access essential emergency medical information for {medicalRecord.fullName}.
-            {medicalRecord.emergencyCode && (
-              <div className="mt-2 p-2 bg-muted rounded-md">
-                <p className="text-xs font-mono">Emergency Code: {medicalRecord.emergencyCode}</p>
-              </div>
-            )}
+            This QR code contains only essential emergency medical information for {medicalRecord.fullName}.
+            For privacy reasons, other personal details have been excluded.
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs defaultValue="quick" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="quick">Quick ID</TabsTrigger>
-            <TabsTrigger value="full">Full Details</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="quick" className="space-y-4">
-            <div className="flex items-center justify-center p-4">
-              <div className="bg-white p-4 rounded-md">
-                <QRCodeSVG 
-                  value={quickIdInfo}
-                  size={200}
-                  level="H"
-                  includeMargin={true}
-                />
-              </div>
-            </div>
-            <div className="bg-muted p-4 rounded-md max-h-32 overflow-y-auto">
-              <pre className="text-xs whitespace-pre-wrap">{quickIdInfo}</pre>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="full" className="space-y-4">
-            <div className="flex items-center justify-center p-4">
-              <div className="bg-white p-4 rounded-md">
-                <QRCodeSVG 
-                  value={emergencyInfo}
-                  size={200}
-                  level="H"
-                  includeMargin={true}
-                />
-              </div>
-            </div>
-            <div className="bg-muted p-4 rounded-md max-h-32 overflow-y-auto">
-              <pre className="text-xs whitespace-pre-wrap">{emergencyInfo}</pre>
-            </div>
-          </TabsContent>
-        </Tabs>
+        <div className="flex items-center justify-center p-4">
+          <div className="bg-white p-4 rounded-md">
+            <QRCodeSVG 
+              value={emergencyInfo}
+              size={200}
+              level="H"
+              includeMargin={true}
+            />
+          </div>
+        </div>
+        
+        <div className="bg-muted p-4 rounded-md max-h-40 overflow-y-auto">
+          <pre className="text-xs whitespace-pre-wrap">{emergencyInfo}</pre>
+        </div>
 
-        <DialogFooter className="flex flex-col sm:flex-row gap-2">
+        <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
           <Button
             type="button"
             variant="outline"

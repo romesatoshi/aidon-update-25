@@ -37,8 +37,13 @@ const AITraining = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [trainingStatus, setTrainingStatus] = useState<"idle" | "training" | "completed">("idle");
   const [trainingProgress, setTrainingProgress] = useState(0);
-  const [metrics, setMetrics] = useState({
-    accuracy: 0.85,
+  const [metrics, setMetrics] = useState<{
+    accuracy: number;
+    precision: number;
+    recall: number;
+    f1Score: number;
+  }>({
+    accuracy: 0.75,
     precision: 0.82,
     recall: 0.79,
     f1Score: 0.80
@@ -47,8 +52,8 @@ const AITraining = () => {
   const [latestMetrics, setLatestMetrics] = useState<null | {
     accuracy: number;
     precision: number;
-    recall: 0.79,
-    f1Score: 0.80
+    recall: number;
+    f1Score: number;
   }>(null);
 
   const handleValuesChange = (field: string, value: number) => {
@@ -245,7 +250,7 @@ const AITraining = () => {
               <CardContent>
                 <div className="text-2xl font-bold">{(metrics.accuracy * 100).toFixed(1)}%</div>
                 <p className="text-xs text-muted-foreground">
-                  +{((metrics.accuracy - 0.85) * 100).toFixed(1)}% from baseline
+                  +{((metrics.accuracy - 0.75) * 100).toFixed(1)}% from baseline
                 </p>
               </CardContent>
             </Card>
