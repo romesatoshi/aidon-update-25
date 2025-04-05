@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import Icons from "@/components/Icons";
 
@@ -15,6 +15,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [ndprConsent, setNdprConsent] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -24,6 +25,12 @@ const Register = () => {
     // Validate passwords match
     if (password !== confirmPassword) {
       setPasswordError("Passwords do not match");
+      return;
+    }
+    
+    // Validate NDPR consent
+    if (!ndprConsent) {
+      setPasswordError("You must consent to data storage to proceed");
       return;
     }
     
@@ -100,9 +107,23 @@ const Register = () => {
                 <p className="text-sm text-destructive">{passwordError}</p>
               )}
             </div>
+            <div className="space-y-2 flex items-center">
+              <Checkbox 
+                id="ndpr-consent"
+                checked={ndprConsent}
+                onCheckedChange={(checked) => setNdprConsent(!!checked)}
+                className="mr-2"
+              />
+              <Label 
+                htmlFor="ndpr-consent" 
+                className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I consent to my data storage per NDPR
+              </Label>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button type="submit" className="w-full" disabled={isSubmitting || !ndprConsent}>
               {isSubmitting ? (
                 <>
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
