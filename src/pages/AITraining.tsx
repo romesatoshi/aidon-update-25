@@ -51,6 +51,13 @@ const AITraining = () => {
     f1Score: 0.80
   }>(null);
 
+  const handleValuesChange = (field: string, value: number) => {
+    setMetrics(prev => ({
+      ...prev,
+      [field]: parseFloat(value.toFixed(2))
+    }));
+  };
+
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');

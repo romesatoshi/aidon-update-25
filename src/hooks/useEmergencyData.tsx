@@ -23,10 +23,11 @@ export function useEmergencyData() {
   const [loading, setLoading] = useState(false);
   
   useEffect(() => {
-    // Load mock data for demonstration
+    // Load mock data for demonstration and limit to 3 most recent entries
+    const limitedHistory = mockUserHistory.slice(0, 3);
     setData(prev => ({ 
       ...prev, 
-      history: mockUserHistory 
+      history: limitedHistory
     }));
     
     // Load medical records from localStorage if available
@@ -64,10 +65,15 @@ export function useEmergencyData() {
       additionalInfo
     };
     
-    setData(prev => ({
-      ...prev,
-      history: [newEntry, ...prev.history]
-    }));
+    setData(prev => {
+      // Add new entry to the beginning and limit to 3 entries
+      const updatedHistory = [newEntry, ...prev.history].slice(0, 3);
+      
+      return {
+        ...prev,
+        history: updatedHistory
+      };
+    });
   };
 
   const addMedicalRecord = (record: MedicalRecord) => {

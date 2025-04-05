@@ -1,10 +1,10 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Icons from "./Icons";
 import { type MedicalRecord } from "./medical-records/types";
 import MedicalRecordForm from "./medical-records/MedicalRecordForm";
-import QRCodeGenerator from "./QRCodeGenerator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -130,7 +130,6 @@ export function MedicalRecordsList({
                     </p>
                   </div>
                   <div className="flex items-center gap-1">
-                    <QRCodeGenerator medicalRecord={record} />
                     <Button 
                       variant="ghost" 
                       size="icon" 

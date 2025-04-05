@@ -10,7 +10,6 @@ import MedicalRecordForm from "./medical-records/MedicalRecordForm";
 import MedicalRecordsList from "./MedicalRecordsList";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
-import QRCodeGenerator from "./QRCodeGenerator";
 import { MedicalRecord } from "./medical-records/types";
 
 interface UserSidebarProps {
@@ -81,7 +80,7 @@ export function UserSidebar({
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="font-semibold flex items-center">
             <Icons.database className="mr-2 h-4 w-4" />
-            Search History
+            Recent Searches (3)
           </h2>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -99,12 +98,6 @@ export function UserSidebar({
         {isAuthenticated && (
           <div className="flex flex-col gap-2 p-3 border-b">
             <div className="flex items-center justify-between">
-              <div className="flex gap-2">
-                {medicalRecords && medicalRecords.length > 0 && (
-                  <QRCodeGenerator medicalRecord={medicalRecords[0]} />
-                )}
-              </div>
-              
               <Button
                 variant="outline"
                 size="sm"
@@ -112,6 +105,7 @@ export function UserSidebar({
                 className="flex items-center justify-center gap-1"
               >
                 <Icons.logout className="h-4 w-4" />
+                Sign Out
               </Button>
             </div>
             
