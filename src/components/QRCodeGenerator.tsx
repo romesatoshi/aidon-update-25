@@ -22,13 +22,17 @@ interface QRCodeGeneratorProps {
 const QRCodeGenerator = ({ medicalRecord }: QRCodeGeneratorProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Generate limited emergency information with only essential data
+  // Generate enhanced emergency information with more comprehensive data
   const emergencyInfo = `EMERGENCY MEDICAL INFO:
 Name: ${medicalRecord.fullName}
 Age: ${medicalRecord.age}
+Blood Type: ${medicalRecord.bloodGroup || "Unknown"}
 Allergies: ${medicalRecord.allergies || "None reported"}
 Medications: ${medicalRecord.medications || "None reported"}
-Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}`;
+Medical Conditions: ${medicalRecord.conditions || "None reported"}
+Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}
+Emergency Contact: ${medicalRecord.emergencyContact || "Not provided"}
+Special Instructions: ${medicalRecord.notes ? medicalRecord.notes.substring(0, 100) : "None"}`;
 
   // Function to copy text to clipboard
   const copyToClipboard = (text: string) => {
@@ -49,16 +53,17 @@ Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}`;
           variant="outline" 
           size="sm" 
           className="flex items-center justify-center gap-1"
+          title="Generate Emergency QR Code"
         >
           <Icons.qrCode className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Emergency Medical QR Code</DialogTitle>
+          <DialogTitle>Enhanced Emergency Medical QR Code</DialogTitle>
           <DialogDescription>
-            This QR code contains only essential emergency medical information for {medicalRecord.fullName}.
-            For privacy reasons, other personal details have been excluded.
+            This QR code contains comprehensive emergency medical information for {medicalRecord.fullName}.
+            First responders can scan this for critical details during an emergency.
           </DialogDescription>
         </DialogHeader>
         
