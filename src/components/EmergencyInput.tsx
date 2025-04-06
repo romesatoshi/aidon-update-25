@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,15 +12,7 @@ import {
   DrawerFooter
 } from "@/components/ui/drawer";
 import { FormField } from "./medical-records/FormField";
-
-interface EmergencyInputProps {
-  onSubmit: (text: string) => void;
-  onFollowUpSubmit?: (answers: Record<string, string>) => void;
-  isLoading: boolean;
-  className?: string;
-  showFollowUp?: boolean;
-  emergencyText?: string;
-}
+import ContextualSuggestions from "./ContextualSuggestions";
 
 // Calming messages to show during loading
 const calmingMessages = [
@@ -81,6 +72,15 @@ const followUpQuestions = {
   ]
 };
 
+interface EmergencyInputProps {
+  onSubmit: (text: string) => void;
+  onFollowUpSubmit?: (answers: Record<string, string>) => void;
+  isLoading: boolean;
+  className?: string;
+  showFollowUp?: boolean;
+  emergencyText?: string;
+}
+
 export function EmergencyInput({ 
   onSubmit, 
   onFollowUpSubmit,
@@ -97,6 +97,7 @@ export function EmergencyInput({
   const [skipCount, setSkipCount] = useState(() => {
     return parseInt(localStorage.getItem("followUpSkipCount") || "0", 10);
   });
+  const [conversationContext, setConversationContext] = useState<string[]>([]);
   
   const { 
     isListening, 
@@ -111,7 +112,6 @@ export function EmergencyInput({
     }
   });
 
-  // Effect to set drawer open state when showFollowUp changes
   useEffect(() => {
     if (showFollowUp && skipCount < 2) {
       determineFollowUpQuestions(emergencyText);
@@ -127,7 +127,6 @@ export function EmergencyInput({
     }
   }, [transcript]);
 
-  // Effect to rotate calming messages during loading
   useEffect(() => {
     if (isLoading) {
       const initialMessage = calmingMessages[Math.floor(Math.random() * calmingMessages.length)];
@@ -150,11 +149,9 @@ export function EmergencyInput({
   };
 
   const determineFollowUpQuestions = (inputText: string) => {
-    // Simple text matching to determine emergency type
     const lowerText = inputText.toLowerCase();
     let questionsToUse = followUpQuestions.default;
     
-    // Find the most relevant question set
     for (const [keyword, questions] of Object.entries(followUpQuestions)) {
       if (keyword !== "default" && lowerText.includes(keyword)) {
         questionsToUse = questions;
@@ -189,7 +186,6 @@ export function EmergencyInput({
 
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
-    // Increment skip count when user skips questions
     const newSkipCount = skipCount + 1;
     setSkipCount(newSkipCount);
     localStorage.setItem("followUpSkipCount", newSkipCount.toString());
@@ -197,6 +193,16 @@ export function EmergencyInput({
     if (onFollowUpSubmit) {
       onFollowUpSubmit({});  // Submit empty answers if user closes without answering
     }
+  };
+
+  const handleSuggestionSelect = (suggestion: string) => {
+    if (text.trim()) {
+      setText(text + "\n" + suggestion);
+    } else {
+      setText(suggestion);
+    }
+    
+    setConversationContext(prev => [...prev, suggestion]);
   };
 
   return (
@@ -225,6 +231,13 @@ export function EmergencyInput({
               </Button>
             )}
           </div>
+          
+          {text && !isLoading && (
+            <ContextualSuggestions 
+              currentEmergency={text}
+              onSuggestionSelect={handleSuggestionSelect}
+            />
+          )}
           
           <div className="flex flex-col gap-3">
             <Button
