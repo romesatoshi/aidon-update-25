@@ -22,7 +22,7 @@ interface QRCodeGeneratorProps {
 const QRCodeGenerator = ({ medicalRecord }: QRCodeGeneratorProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Generate contextual emergency information with adaptive content
+  // Generate enhanced emergency information with more comprehensive data
   const emergencyInfo = `EMERGENCY MEDICAL INFO:
 Name: ${medicalRecord.fullName}
 Age: ${medicalRecord.age}
@@ -32,11 +32,7 @@ Medications: ${medicalRecord.medications || "None reported"}
 Medical Conditions: ${medicalRecord.conditions || "None reported"}
 Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}
 Emergency Contact: ${medicalRecord.emergencyContact || "Not provided"}
-Special Instructions: ${medicalRecord.notes ? medicalRecord.notes.substring(0, 100) : "None"}
-${medicalRecord.genotype ? `Genotype: ${medicalRecord.genotype}` : ""}
-${medicalRecord.hivStatus ? `HIV Status: ${medicalRecord.hivStatus}` : ""}
-${medicalRecord.hepatitisStatus ? `Hepatitis Status: ${medicalRecord.hepatitisStatus}` : ""}
-Emergency Code: ${medicalRecord.emergencyCode || "N/A"}`;
+Special Instructions: ${medicalRecord.notes ? medicalRecord.notes.substring(0, 100) : "None"}`;
 
   // Function to copy text to clipboard
   const copyToClipboard = (text: string) => {
@@ -48,16 +44,6 @@ Emergency Code: ${medicalRecord.emergencyCode || "N/A"}`;
       .catch(err => {
         console.error('Failed to copy text: ', err);
       });
-  };
-
-  // Adaptive content based on available medical information
-  const getDialogTitle = () => {
-    const hasCriticalInfo = medicalRecord.bloodGroup && 
-      (medicalRecord.conditions || medicalRecord.allergies || medicalRecord.medications);
-    
-    return hasCriticalInfo 
-      ? "Critical Medical Information QR Code" 
-      : "Enhanced Emergency Medical QR Code";
   };
 
   return (
@@ -74,7 +60,7 @@ Emergency Code: ${medicalRecord.emergencyCode || "N/A"}`;
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{getDialogTitle()}</DialogTitle>
+          <DialogTitle>Enhanced Emergency Medical QR Code</DialogTitle>
           <DialogDescription>
             This QR code contains comprehensive emergency medical information for {medicalRecord.fullName}.
             First responders can scan this for critical details during an emergency.
