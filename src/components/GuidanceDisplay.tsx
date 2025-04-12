@@ -38,7 +38,7 @@ export function GuidanceDisplay({
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
 
   const handleSpeak = () => {
-    let textToSpeak = guidance;
+    let textToSpeak = guidance.replace(/\n/g, '. '); // Replace line breaks with pauses for speech
     
     if (additionalInfo && Object.keys(additionalInfo).length > 0) {
       textToSpeak += ". Additional information: ";
@@ -76,6 +76,21 @@ export function GuidanceDisplay({
     }
   };
 
+  const formatGuidanceDisplay = (text: string) => {
+    if (text.includes('\n')) {
+      const steps = text.split('\n').filter(step => step.trim().length > 0);
+      return (
+        <ol className="list-decimal pl-5 space-y-2">
+          {steps.map((step, index) => (
+            <li key={index} className="text-balance">{step}</li>
+          ))}
+        </ol>
+      );
+    }
+    
+    return <p className="text-balance">{text}</p>;
+  };
+
   if (!guidance) return null;
 
   return (
@@ -89,7 +104,7 @@ export function GuidanceDisplay({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <p className="text-balance">{guidance}</p>
+            {formatGuidanceDisplay(guidance)}
             
             <Tabs defaultValue="additional" className="w-full mt-4">
               <TabsList className="w-full grid grid-cols-3 mb-2">

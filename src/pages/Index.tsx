@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -118,10 +119,25 @@ const Index = () => {
       
       let updatedEmergency = emergency;
       
-      updatedEmergency += "\n\nAdditional Information:";
+      updatedEmergency += "\n\nAdditional Assessment Information:";
+      
+      // First add regular answers
       for (const [question, answer] of Object.entries(additionalDetails)) {
-        if (answer.trim()) {
+        if (answer.trim() && !question.includes("Red Cross Protocol")) {
           updatedEmergency += `\n- ${question}: ${answer}`;
+        }
+      }
+      
+      // Then add protocol-based responses separately for clarity
+      let hasProtocols = false;
+      for (const [question, answer] of Object.entries(additionalDetails)) {
+        if (question.includes("Red Cross Protocol") && answer.trim()) {
+          if (!hasProtocols) {
+            updatedEmergency += "\n\nRed Cross Protocol Guidance:";
+            hasProtocols = true;
+          }
+          const baseQuestion = question.replace(" - Red Cross Protocol", "");
+          updatedEmergency += `\n- For "${baseQuestion}": ${answer}`;
         }
       }
       
@@ -131,8 +147,8 @@ const Index = () => {
       addEmergencyEntry(emergencyTitle, guidance, additionalDetails);
       
       toast({
-        title: "Information updated",
-        description: "The additional details have been saved and added to your guidance.",
+        title: "Assessment complete",
+        description: "Additional protocol-based guidance has been provided based on your answers.",
       });
     }
     
