@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { mockUserHistory } from '../lib/mockData';
 import { MedicalRecord } from '@/components/medical-records/types';
@@ -267,4 +268,57 @@ export function useEmergencyData() {
       
       // First try to find exact phrase matches
       for (const [key, value] of Object.entries(redCrossProtocols)) {
-        if (lowerEmergencyText.
+        if (lowerEmergencyText.includes(key)) {
+          guidance = value;
+          foundMatch = true;
+          break;
+        }
+      }
+      
+      // If no exact match, try to find partial matches
+      if (!foundMatch) {
+        for (const [key, value] of Object.entries(redCrossProtocols)) {
+          const keywords = key.split(' ');
+          for (const word of keywords) {
+            if (word.length > 3 && lowerEmergencyText.includes(word)) {
+              guidance = value;
+              foundMatch = true;
+              break;
+            }
+          }
+          if (foundMatch) break;
+        }
+      }
+      
+      // Fallback for no matches
+      if (!foundMatch) {
+        guidance = "1. Assess the situation for danger to yourself or others.\n2. Call emergency services (911) immediately if there's any doubt about severity.\n3. Keep the person still and comfortable until help arrives.\n4. Monitor breathing and consciousness.\n5. If trained and needed, begin CPR or other appropriate first aid measures.\n6. Gather information about what happened and any symptoms for emergency responders.\n7. Reassure the person and keep them calm.\n8. Do not give food or drink unless specifically advised.\n9. Help the person maintain normal body temperature.\n10. Stay with the person until emergency services arrive.";
+      }
+      
+      // Format any unformatted guidance into steps
+      const formattedGuidance = guidance;
+      
+      setLoading(false);
+      return formattedGuidance;
+    } catch (error) {
+      setLoading(false);
+      console.error("Error retrieving guidance:", error);
+      return "Error retrieving emergency guidance. Please call emergency services (911) immediately.";
+    }
+  };
+
+  return {
+    data,
+    loading,
+    addEmergencyEntry,
+    addMedicalRecord,
+    editMedicalRecord,
+    deleteMedicalRecord,
+    requestsPersonalInfo,
+    formatGuidanceAsSteps,
+    processFollowUpAnswer,
+    requestGuidance
+  };
+}
+
+export default useEmergencyData;
