@@ -22,17 +22,14 @@ interface QRCodeGeneratorProps {
 const QRCodeGenerator = ({ medicalRecord }: QRCodeGeneratorProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Generate enhanced emergency information with more comprehensive data
+  // Generate concise emergency information
   const emergencyInfo = `EMERGENCY MEDICAL INFO:
 Name: ${medicalRecord.fullName}
 Age: ${medicalRecord.age}
 Blood Type: ${medicalRecord.bloodGroup || "Unknown"}
-Allergies: ${medicalRecord.allergies || "None reported"}
-Medications: ${medicalRecord.medications || "None reported"}
-Medical Conditions: ${medicalRecord.conditions || "None reported"}
-Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}
-Emergency Contact: ${medicalRecord.emergencyContact || "Not provided"}
-Special Instructions: ${medicalRecord.notes ? medicalRecord.notes.substring(0, 100) : "None"}`;
+Allergies: ${medicalRecord.allergies || "None"}
+Emergency Contact: ${medicalRecord.emergencyContact || "None"}
+Emergency Phone: ${medicalRecord.emergencyPhone || "None"}`;
 
   // Function to copy text to clipboard
   const copyToClipboard = (text: string) => {
@@ -60,10 +57,9 @@ Special Instructions: ${medicalRecord.notes ? medicalRecord.notes.substring(0, 1
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Enhanced Emergency Medical QR Code</DialogTitle>
+          <DialogTitle>Essential Emergency Medical QR Code</DialogTitle>
           <DialogDescription>
-            This QR code contains comprehensive emergency medical information for {medicalRecord.fullName}.
-            First responders can scan this for critical details during an emergency.
+            This QR code contains critical medical information for quick reference.
           </DialogDescription>
         </DialogHeader>
         
