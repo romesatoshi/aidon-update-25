@@ -27,6 +27,11 @@ export interface MedicalRecord {
   genotype: string;
   hivStatus: string;
   hepatitisStatus: string;
+  // Authentication fields
+  verifiedBy?: string;
+  verificationDate?: string;
+  digitalSignature?: string;
+  verificationStatus?: 'unverified' | 'pending' | 'verified';
 }
 
 export interface MedicalRecordFormProps { 
