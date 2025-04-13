@@ -12,6 +12,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
+import { Shield, Clock, AlertCircle, Check, Clipboard } from 'lucide-react';
 import Icons from './Icons';
 import { MedicalRecord } from './medical-records/types';
 
@@ -95,15 +96,15 @@ ${medicalRecord.verificationStatus === 'verified' ?
             <div className="flex items-center">
               {medicalRecord.verificationStatus === 'verified' ? (
                 <span className="inline-flex items-center text-green-600 gap-1">
-                  <Icons.shield className="h-4 w-4" /> Verified
+                  <Shield className="h-4 w-4" /> Verified
                 </span>
               ) : medicalRecord.verificationStatus === 'pending' ? (
                 <span className="inline-flex items-center text-amber-600 gap-1">
-                  <Icons.clock className="h-4 w-4" /> Pending Verification
+                  <Clock className="h-4 w-4" /> Pending Verification
                 </span>
               ) : (
                 <span className="inline-flex items-center text-gray-500 gap-1">
-                  <Icons.alertCircle className="h-4 w-4" /> Unverified
+                  <AlertCircle className="h-4 w-4" /> Unverified
                 </span>
               )}
             </div>
