@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import { Shield, Clock, AlertCircle, Check, Clipboard } from 'lucide-react';
+import { Shield, Clock, AlertCircle, Check, Clipboard, ShieldCheck } from 'lucide-react';
 import Icons from './Icons';
 import { MedicalRecord } from './medical-records/types';
 
@@ -23,7 +23,7 @@ interface QRCodeGeneratorProps {
 const QRCodeGenerator = ({ medicalRecord }: QRCodeGeneratorProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Generate concise emergency information with verification
+  // Generate concise emergency information with verification status only (not verifier name)
   const emergencyInfo = `EMERGENCY MEDICAL INFO:
 Name: ${medicalRecord.fullName}
 Age: ${medicalRecord.age}
@@ -32,10 +32,9 @@ Allergies: ${medicalRecord.allergies || "None"}
 Emergency Contact: ${medicalRecord.emergencyContact || "None"}
 Emergency Phone: ${medicalRecord.emergencyPhone || "None"}
 ${medicalRecord.verificationStatus === 'verified' ? 
-  `Verified By: ${medicalRecord.verifiedBy || "Medical Professional"}
-  Verified On: ${medicalRecord.verificationDate || new Date().toLocaleDateString()}
-  Digital Signature: ${medicalRecord.digitalSignature || "Authenticated"}` : 
-  "Authentication Status: Unverified"}`;
+  `Verification Status: Verified
+  Verification Date: ${medicalRecord.verificationDate || new Date().toLocaleDateString()}` : 
+  "Verification Status: " + (medicalRecord.verificationStatus || "Unverified")}`;
 
   // Function to copy text to clipboard
   const copyToClipboard = (text: string) => {
@@ -68,7 +67,7 @@ ${medicalRecord.verificationStatus === 'verified' ?
             This QR code contains critical medical information for quick reference.
             {medicalRecord.verificationStatus === 'verified' && (
               <span className="inline-flex items-center mt-2 text-green-600 gap-1 text-xs">
-                <Icons.check className="h-3 w-3" /> Verified medical information
+                <ShieldCheck className="h-3 w-3" /> Verified medical information
               </span>
             )}
           </DialogDescription>
@@ -96,7 +95,7 @@ ${medicalRecord.verificationStatus === 'verified' ?
             <div className="flex items-center">
               {medicalRecord.verificationStatus === 'verified' ? (
                 <span className="inline-flex items-center text-green-600 gap-1">
-                  <Shield className="h-4 w-4" /> Verified
+                  <ShieldCheck className="h-4 w-4" /> Verified
                 </span>
               ) : medicalRecord.verificationStatus === 'pending' ? (
                 <span className="inline-flex items-center text-amber-600 gap-1">
@@ -110,21 +109,17 @@ ${medicalRecord.verificationStatus === 'verified' ?
             </div>
           </div>
           
-          {medicalRecord.verificationStatus === 'verified' && medicalRecord.verifiedBy && (
+          {medicalRecord.verificationStatus === 'verified' && (
             <div className="mt-2 pt-2 border-t text-xs">
-              <div className="flex justify-between mb-1">
-                <span className="text-muted-foreground">Verified By:</span>
-                <span>{medicalRecord.verifiedBy}</span>
-              </div>
               {medicalRecord.verificationDate && (
                 <div className="flex justify-between mb-1">
-                  <span className="text-muted-foreground">Date:</span>
+                  <span className="text-muted-foreground">Verified Date:</span>
                   <span>{medicalRecord.verificationDate}</span>
                 </div>
               )}
               {medicalRecord.digitalSignature && (
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Signature:</span>
+                  <span className="text-muted-foreground">Digital Signature:</span>
                   <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
                     {medicalRecord.digitalSignature.substring(0, 16)}...
                   </span>
@@ -143,12 +138,12 @@ ${medicalRecord.verificationStatus === 'verified' ?
           >
             {copied ? (
               <>
-                <Icons.check className="mr-2 h-4 w-4" />
+                <Check className="mr-2 h-4 w-4" />
                 <span>Copied</span>
               </>
             ) : (
               <>
-                <Icons.clipboard className="mr-2 h-4 w-4" />
+                <Clipboard className="mr-2 h-4 w-4" />
                 <span>Copy to Clipboard</span>
               </>
             )}

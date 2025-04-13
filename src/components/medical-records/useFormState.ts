@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { MedicalRecord } from "./types";
 
+// Form data structure for the medical record form
 export interface FormData {
   fullName: string;
   bloodGroup: string;
@@ -34,6 +35,39 @@ export interface FormData {
   digitalSignature?: string;
 }
 
+// Initial empty form data
+const initialFormData: FormData = {
+  fullName: "",
+  bloodGroup: "",
+  age: "",
+  sex: "",
+  maritalStatus: "",
+  dateOfBirth: "",
+  weight: "",
+  primaryPhysician: "",
+  healthInsurance: "",
+  advanceDirectives: "",
+  organDonor: "",
+  language: "",
+  address: "",
+  recentHospitalizations: "",
+  allergies: "",
+  conditions: "",
+  medications: "",
+  medicationDosage: "",
+  emergencyContact: "",
+  emergencyPhone: "",
+  notes: "",
+  genotype: "",
+  hivStatus: "",
+  hepatitisStatus: "",
+  verificationStatus: "unverified",
+  verifiedBy: "",
+  verificationDate: "",
+  digitalSignature: ""
+};
+
+// Generate a unique emergency code
 const generateEmergencyCode = (): string => {
   const alphanumeric = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const numeric = '0123456789';
@@ -54,39 +88,11 @@ const generateEmergencyCode = (): string => {
 };
 
 export const useFormState = (initialData?: MedicalRecord, onSave?: (record: MedicalRecord) => void, onClose?: () => void) => {
-  const [formData, setFormData] = useState<FormData>({
-    fullName: "",
-    bloodGroup: "",
-    age: "",
-    sex: "",
-    maritalStatus: "",
-    dateOfBirth: "",
-    weight: "",
-    primaryPhysician: "",
-    healthInsurance: "",
-    advanceDirectives: "",
-    organDonor: "",
-    language: "",
-    address: "",
-    recentHospitalizations: "",
-    allergies: "",
-    conditions: "",
-    medications: "",
-    medicationDosage: "",
-    emergencyContact: "",
-    emergencyPhone: "",
-    notes: "",
-    genotype: "",
-    hivStatus: "",
-    hepatitisStatus: "",
-    verificationStatus: "unverified",
-    verifiedBy: "",
-    verificationDate: "",
-    digitalSignature: ""
-  });
+  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   
+  // Initialize form with data if provided
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -122,6 +128,7 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     }
   }, [initialData]);
 
+  // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -130,6 +137,7 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     }));
   };
 
+  // Handle verification status change
   const handleVerificationStatusChange = (isVerified: boolean) => {
     setFormData(prev => ({
       ...prev,
@@ -143,16 +151,15 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  // Validate form data
+  const validateForm = (): boolean => {
     if (!formData.fullName || !formData.bloodGroup) {
       toast({
         title: "Error",
         description: "Please enter at least full name and blood group.",
         variant: "destructive",
       });
-      return;
+      return false;
     }
 
     // Validation for verification fields
@@ -163,9 +170,18 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
           description: "Please complete all verification fields",
           variant: "destructive",
         });
-        return;
+        return false;
       }
     }
+
+    return true;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
 
     setLoading(true);
     
@@ -194,36 +210,7 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
       });
       
       if (!initialData) {
-        setFormData({
-          fullName: "",
-          bloodGroup: "",
-          age: "",
-          sex: "",
-          maritalStatus: "",
-          dateOfBirth: "",
-          weight: "",
-          primaryPhysician: "",
-          healthInsurance: "",
-          advanceDirectives: "",
-          organDonor: "",
-          language: "",
-          address: "",
-          recentHospitalizations: "",
-          allergies: "",
-          conditions: "",
-          medications: "",
-          medicationDosage: "",
-          emergencyContact: "",
-          emergencyPhone: "",
-          notes: "",
-          genotype: "",
-          hivStatus: "",
-          hepatitisStatus: "",
-          verificationStatus: "unverified",
-          verifiedBy: "",
-          verificationDate: "",
-          digitalSignature: ""
-        });
+        setFormData(initialFormData);
       }
       
       if (onClose) onClose();
