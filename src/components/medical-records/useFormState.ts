@@ -28,6 +28,10 @@ export interface FormData {
   genotype: string;
   hivStatus: string;
   hepatitisStatus: string;
+  verificationStatus?: 'unverified' | 'pending' | 'verified';
+  verifiedBy?: string;
+  verificationDate?: string;
+  digitalSignature?: string;
 }
 
 const generateEmergencyCode = (): string => {
@@ -74,7 +78,11 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     notes: "",
     genotype: "",
     hivStatus: "",
-    hepatitisStatus: ""
+    hepatitisStatus: "",
+    verificationStatus: "unverified",
+    verifiedBy: "",
+    verificationDate: "",
+    digitalSignature: ""
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -105,7 +113,11 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
         notes: initialData.notes || "",
         genotype: initialData.genotype || "",
         hivStatus: initialData.hivStatus || "",
-        hepatitisStatus: initialData.hepatitisStatus || ""
+        hepatitisStatus: initialData.hepatitisStatus || "",
+        verificationStatus: initialData.verificationStatus || "unverified",
+        verifiedBy: initialData.verifiedBy || "",
+        verificationDate: initialData.verificationDate || "",
+        digitalSignature: initialData.digitalSignature || ""
       });
     }
   }, [initialData]);
@@ -115,6 +127,19 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleVerificationStatusChange = (isVerified: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      verificationStatus: isVerified ? 'verified' : 'unverified',
+      // If unchecking, reset verification fields
+      ...(isVerified ? {} : {
+        verifiedBy: "",
+        verificationDate: "",
+        digitalSignature: ""
+      })
     }));
   };
 
@@ -128,6 +153,18 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
         variant: "destructive",
       });
       return;
+    }
+
+    // Validation for verification fields
+    if (formData.verificationStatus === 'verified') {
+      if (!formData.verifiedBy || !formData.verificationDate) {
+        toast({
+          title: "Verification Error",
+          description: "Please complete all verification fields",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     setLoading(true);
@@ -181,7 +218,11 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
           notes: "",
           genotype: "",
           hivStatus: "",
-          hepatitisStatus: ""
+          hepatitisStatus: "",
+          verificationStatus: "unverified",
+          verifiedBy: "",
+          verificationDate: "",
+          digitalSignature: ""
         });
       }
       
@@ -202,6 +243,7 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     formData,
     loading,
     handleInputChange,
-    handleSubmit
+    handleSubmit,
+    handleVerificationStatusChange
   };
 };
