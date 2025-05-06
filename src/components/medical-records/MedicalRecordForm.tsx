@@ -5,6 +5,7 @@ import { PersonalInfoFields } from "./PersonalInfoFields";
 import { MedicalInfoFields } from "./MedicalInfoFields";
 import { EmergencyContactFields } from "./EmergencyContactFields";
 import { VerificationFields } from "./VerificationFields";
+import { MedicalImagesField } from "./MedicalImagesField";
 import { useFormState } from "./useFormState";
 import { MedicalRecordFormProps } from "./types";
 
@@ -14,7 +15,9 @@ export function MedicalRecordForm({ onClose, onSave, initialData }: MedicalRecor
     loading, 
     handleInputChange, 
     handleSubmit, 
-    handleVerificationStatusChange 
+    handleVerificationStatusChange,
+    handleAddMedicalImage,
+    handleRemoveMedicalImage
   } = useFormState(initialData, onSave, onClose);
 
   return (
@@ -25,6 +28,11 @@ export function MedicalRecordForm({ onClose, onSave, initialData }: MedicalRecor
         <PersonalInfoFields formData={formData} handleInputChange={handleInputChange} />
         <MedicalInfoFields formData={formData} handleInputChange={handleInputChange} />
         <EmergencyContactFields formData={formData} handleInputChange={handleInputChange} />
+        <MedicalImagesField 
+          images={formData.medicalImages || []}
+          onAddImage={handleAddMedicalImage}
+          onRemoveImage={handleRemoveMedicalImage}
+        />
         <VerificationFields 
           formData={formData} 
           handleInputChange={handleInputChange} 

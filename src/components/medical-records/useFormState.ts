@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { MedicalRecord } from "./types";
+import { MedicalRecord, MedicalImage } from "./types";
 
 // Form data structure for the medical record form
 export interface FormData {
@@ -33,6 +33,7 @@ export interface FormData {
   verifiedBy?: string;
   verificationDate?: string;
   digitalSignature?: string;
+  medicalImages?: MedicalImage[];
 }
 
 // Initial empty form data
@@ -64,7 +65,8 @@ const initialFormData: FormData = {
   verificationStatus: "unverified",
   verifiedBy: "",
   verificationDate: "",
-  digitalSignature: ""
+  digitalSignature: "",
+  medicalImages: []
 };
 
 // Generate a unique emergency code
@@ -123,7 +125,8 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
         verificationStatus: initialData.verificationStatus || "unverified",
         verifiedBy: initialData.verifiedBy || "",
         verificationDate: initialData.verificationDate || "",
-        digitalSignature: initialData.digitalSignature || ""
+        digitalSignature: initialData.digitalSignature || "",
+        medicalImages: initialData.medicalImages || []
       });
     }
   }, [initialData]);
@@ -134,6 +137,21 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  // Handle medical image operations
+  const handleAddMedicalImage = (image: MedicalImage) => {
+    setFormData(prev => ({
+      ...prev,
+      medicalImages: [...(prev.medicalImages || []), image]
+    }));
+  };
+
+  const handleRemoveMedicalImage = (imageId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      medicalImages: (prev.medicalImages || []).filter(img => img.id !== imageId)
     }));
   };
 
@@ -231,6 +249,8 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     loading,
     handleInputChange,
     handleSubmit,
-    handleVerificationStatusChange
+    handleVerificationStatusChange,
+    handleAddMedicalImage,
+    handleRemoveMedicalImage
   };
 };

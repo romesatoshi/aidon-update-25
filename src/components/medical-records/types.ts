@@ -32,6 +32,17 @@ export interface MedicalRecord {
   verificationDate?: string;
   digitalSignature?: string;
   verificationStatus?: 'unverified' | 'pending' | 'verified';
+  // Medical images
+  medicalImages?: MedicalImage[];
+}
+
+export interface MedicalImage {
+  id: string;
+  name: string;
+  type: 'xray' | 'report' | 'other';
+  description?: string;
+  dataUrl: string;
+  uploadDate: string;
 }
 
 export interface MedicalRecordFormProps { 
