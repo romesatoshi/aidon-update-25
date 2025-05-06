@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,6 +26,8 @@ import { useToast } from "@/hooks/use-toast";
 import Icons from "@/components/Icons";
 import AIMetricsChart from "@/components/ai-training/AIMetricsChart";
 import TrainingDataForm, { TrainingData } from "@/components/ai-training/TrainingDataForm";
+import ValidationDialog from "@/components/ai-training/ValidationDialog";
+import { Badge } from "@/components/ui/badge";
 
 const AITraining = () => {
   const { isAuthenticated, user } = useAuth();
@@ -36,13 +37,31 @@ const AITraining = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [trainingStatus, setTrainingStatus] = useState<"idle" | "training" | "completed">("idle");
   const [trainingProgress, setTrainingProgress] = useState(0);
-  const [metrics, setMetrics] = useState({
-    accuracy: 0.85,
+  const [metrics, setMetrics] = useState<{
+    accuracy: number;
+    precision: number;
+    recall: number;
+    f1Score: number;
+  }>({
+    accuracy: 0.75,
     precision: 0.82,
     recall: 0.79,
     f1Score: 0.80
   });
   const [trainingData, setTrainingData] = useState<TrainingData[]>([]);
+  const [latestMetrics, setLatestMetrics] = useState<null | {
+    accuracy: number;
+    precision: number;
+    recall: number;
+    f1Score: number;
+  }>(null);
+
+  const handleValuesChange = (field: string, value: number) => {
+    setMetrics(prev => ({
+      ...prev,
+      [field]: parseFloat(value.toFixed(2))
+    }));
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -79,36 +98,60 @@ const AITraining = () => {
     setTrainingStatus("training");
     setTrainingProgress(0);
     
-    // Simulate training process
+    // Count validated entries
+    const validatedEntries = trainingData.filter(entry => entry.validated).length;
+    
+    // Simulate actual training process with realistic steps
+    let step = 0;
+    const totalSteps = 5; // Preprocessing, training, evaluation, optimization, saving
+    const stepMessages = [
+      "Preprocessing and validating training data...",
+      "Training model with validated scenarios...",
+      "Evaluating model performance...",
+      "Optimizing model parameters...",
+      "Saving and finalizing model..."
+    ];
+    
     const interval = setInterval(() => {
-      setTrainingProgress((prev) => {
-        const newProgress = prev + Math.random() * 10;
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          setTrainingStatus("completed");
-          
-          // Calculate improvement based on amount of training data
-          const dataPoints = trainingData.length + Math.min(data.history.length, 5);
-          const improvementFactor = Math.min(0.1, dataPoints * 0.01);
-          
-          // Simulate improved metrics after training
-          setMetrics({
-            accuracy: Math.min(0.98, metrics.accuracy + improvementFactor),
-            precision: Math.min(0.97, metrics.precision + improvementFactor),
-            recall: Math.min(0.95, metrics.recall + improvementFactor * 1.1),
-            f1Score: Math.min(0.96, metrics.f1Score + improvementFactor * 0.9)
-          });
-          
-          toast({
-            title: "Training Completed",
-            description: `The AI model has been successfully trained with ${dataPoints} scenarios.`,
-          });
-          
-          return 100;
-        }
-        return newProgress;
-      });
-    }, 500);
+      step++;
+      const progress = (step / totalSteps) * 100;
+      
+      setTrainingProgress(progress);
+      
+      if (step <= totalSteps) {
+        toast({
+          title: `Training Step ${step}/${totalSteps}`,
+          description: stepMessages[step - 1],
+        });
+      }
+      
+      if (step >= totalSteps) {
+        clearInterval(interval);
+        setTrainingStatus("completed");
+        
+        // Calculate improvement based on amount of training data and validation
+        const dataPoints = validatedEntries + Math.min(data.history.length, 5);
+        const validationBonus = validatedEntries > 0 ? validatedEntries * 0.005 : 0;
+        const improvementFactor = Math.min(0.1, dataPoints * 0.01 + validationBonus);
+        
+        // Calculate new metrics
+        const newMetrics = {
+          accuracy: Math.min(0.98, metrics.accuracy + improvementFactor),
+          precision: Math.min(0.97, metrics.precision + improvementFactor),
+          recall: Math.min(0.95, metrics.recall + improvementFactor * 1.1),
+          f1Score: Math.min(0.96, metrics.f1Score + improvementFactor * 0.9)
+        };
+        
+        // Update metrics
+        setMetrics(newMetrics);
+        setLatestMetrics(newMetrics);
+        
+        toast({
+          title: "Training Completed",
+          description: `The AI model has been successfully trained with ${dataPoints} scenarios. Performance improved by ${(improvementFactor * 100).toFixed(1)}%.`,
+        });
+      }
+    }, 1200);
   };
 
   const handleAddTrainingData = (data: TrainingData) => {
@@ -124,6 +167,52 @@ const AITraining = () => {
     toast({
       title: "Training Data Removed",
       description: "The scenario has been removed from the training dataset.",
+    });
+  };
+  
+  const validateTrainingData = (id: string, isValid: boolean, correctedGuidance?: string) => {
+    setTrainingData(prevData => prevData.map(item => {
+      if (item.timestamp === id) {
+        const updatedItem = { 
+          ...item, 
+          validated: isValid,
+          confidence: isValid ? 0.9 : 0.3
+        };
+        
+        if (correctedGuidance) {
+          updatedItem.expectedGuidance = correctedGuidance;
+        }
+        
+        return updatedItem;
+      }
+      return item;
+    }));
+    
+    toast({
+      title: isValid ? "Scenario Validated" : "Scenario Rejected",
+      description: isValid 
+        ? "This scenario has been validated and will be used for AI training." 
+        : "This scenario has been rejected or modified and will need review.",
+    });
+  };
+
+  const exportTrainingData = () => {
+    // Create a JSON blob and trigger download
+    const dataStr = JSON.stringify(trainingData, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "aid-on-training-data.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Export Successful",
+      description: "Training data exported as JSON file."
     });
   };
 
@@ -161,7 +250,7 @@ const AITraining = () => {
               <CardContent>
                 <div className="text-2xl font-bold">{(metrics.accuracy * 100).toFixed(1)}%</div>
                 <p className="text-xs text-muted-foreground">
-                  +{(Math.random() * 2).toFixed(1)}% from last training
+                  +{((metrics.accuracy - 0.75) * 100).toFixed(1)}% from baseline
                 </p>
               </CardContent>
             </Card>
@@ -172,7 +261,7 @@ const AITraining = () => {
               <CardContent>
                 <div className="text-2xl font-bold">{(metrics.precision * 100).toFixed(1)}%</div>
                 <p className="text-xs text-muted-foreground">
-                  +{(Math.random() * 2).toFixed(1)}% from last training
+                  +{((metrics.precision - 0.82) * 100).toFixed(1)}% from baseline
                 </p>
               </CardContent>
             </Card>
@@ -183,7 +272,7 @@ const AITraining = () => {
               <CardContent>
                 <div className="text-2xl font-bold">{(metrics.recall * 100).toFixed(1)}%</div>
                 <p className="text-xs text-muted-foreground">
-                  +{(Math.random() * 3).toFixed(1)}% from last training
+                  +{((metrics.recall - 0.79) * 100).toFixed(1)}% from baseline
                 </p>
               </CardContent>
             </Card>
@@ -194,7 +283,7 @@ const AITraining = () => {
               <CardContent>
                 <div className="text-2xl font-bold">{(metrics.f1Score * 100).toFixed(1)}%</div>
                 <p className="text-xs text-muted-foreground">
-                  +{(Math.random() * 2.5).toFixed(1)}% from last training
+                  +{((metrics.f1Score - 0.80) * 100).toFixed(1)}% from baseline
                 </p>
               </CardContent>
             </Card>
@@ -208,7 +297,7 @@ const AITraining = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="h-[300px]">
-              <AIMetricsChart />
+              <AIMetricsChart latestMetrics={latestMetrics} />
             </CardContent>
           </Card>
 
@@ -227,8 +316,23 @@ const AITraining = () => {
               <p className="text-sm text-muted-foreground">
                 {trainingProgress.toFixed(0)}% complete
               </p>
+              
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Validated scenarios:</span>
+                  <span className="font-medium">{trainingData.filter(d => d.validated).length}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Pending validation:</span>
+                  <span className="font-medium">{trainingData.filter(d => d.validated === false || d.validated === undefined).length}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>User history entries:</span>
+                  <span className="font-medium">{Math.min(data.history.length, 5)}</span>
+                </div>
+              </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex gap-2">
               <Button
                 onClick={startTraining}
                 disabled={trainingStatus === "training"}
@@ -236,6 +340,16 @@ const AITraining = () => {
               >
                 <Icons.refresh className="h-4 w-4" />
                 {trainingStatus === "completed" ? "Retrain Model" : "Start Training"}
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={exportTrainingData}
+                disabled={trainingData.length === 0}
+                className="flex items-center gap-2"
+              >
+                <Icons.download className="h-4 w-4" />
+                Export Data
               </Button>
             </CardFooter>
           </Card>
@@ -268,24 +382,42 @@ const AITraining = () => {
                   <TableRow>
                     <TableHead>Emergency</TableHead>
                     <TableHead>Guidance</TableHead>
-                    <TableHead className="w-[100px]">Source</TableHead>
-                    <TableHead className="w-[80px]">Actions</TableHead>
+                    <TableHead className="w-[100px]">Status</TableHead>
+                    <TableHead className="w-[120px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {trainingData.map((entry, index) => (
                     <TableRow key={`custom-${index}`}>
-                      <TableCell className="font-medium">{entry.emergencyScenario}</TableCell>
+                      <TableCell className="font-medium">
+                        {entry.emergencyScenario}
+                        <div className="mt-1">
+                          <Badge variant="outline" className="text-xs">{entry.category}</Badge>
+                        </div>
+                      </TableCell>
                       <TableCell className="max-w-md truncate">{entry.expectedGuidance}</TableCell>
-                      <TableCell>{entry.source === 'manual' ? 'Custom' : entry.source}</TableCell>
                       <TableCell>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          onClick={() => removeTrainingData(index)}
-                        >
-                          <Icons.trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                        {entry.validated ? (
+                          <Badge className="bg-green-500">Validated</Badge>
+                        ) : (
+                          <Badge variant="outline">Pending</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-1">
+                          <ValidationDialog 
+                            trainingData={entry} 
+                            onValidate={validateTrainingData} 
+                          />
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => removeTrainingData(index)}
+                            className="h-8 w-8"
+                          >
+                            <Icons.trash className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -293,10 +425,13 @@ const AITraining = () => {
                     <TableRow key={`history-${index}`}>
                       <TableCell className="font-medium">{entry.emergency}</TableCell>
                       <TableCell className="max-w-md truncate">{entry.guidance}</TableCell>
-                      <TableCell>User Query</TableCell>
+                      <TableCell>
+                        <Badge className="bg-blue-500">User Query</Badge>
+                      </TableCell>
                       <TableCell></TableCell>
                     </TableRow>
                   ))}
+                  
                   <TableRow>
                     <TableCell className="font-medium">Severe Allergic Reaction</TableCell>
                     <TableCell className="max-w-md truncate">Look for signs of anaphylaxis. If available, help them use their epinephrine auto-injector. Call emergency services immediately.</TableCell>

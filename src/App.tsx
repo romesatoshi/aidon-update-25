@@ -16,22 +16,10 @@ import AITraining from "./pages/AITraining";
 
 const queryClient = new QueryClient();
 
-// Add an AdminRoute component to check for admin permissions
+// Update AdminRoute to use the isAdmin property from auth context
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const checkAdmin = () => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      try {
-        const user = JSON.parse(savedUser);
-        return user.email === "test@example.com";
-      } catch (e) {
-        return false;
-      }
-    }
-    return false;
-  };
-  
-  return checkAdmin() ? <>{children}</> : <Navigate to="/" replace />;
+  const { isAdmin } = useAuth();
+  return isAdmin ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 const App = () => (

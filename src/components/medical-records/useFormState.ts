@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { MedicalRecord } from "./types";
+import { MedicalRecord, MedicalImage } from "./types";
 
+// Form data structure for the medical record form
 export interface FormData {
   fullName: string;
   bloodGroup: string;
@@ -28,8 +29,47 @@ export interface FormData {
   genotype: string;
   hivStatus: string;
   hepatitisStatus: string;
+  verificationStatus?: 'unverified' | 'pending' | 'verified';
+  verifiedBy?: string;
+  verificationDate?: string;
+  digitalSignature?: string;
+  medicalImages?: MedicalImage[];
 }
 
+// Initial empty form data
+const initialFormData: FormData = {
+  fullName: "",
+  bloodGroup: "",
+  age: "",
+  sex: "",
+  maritalStatus: "",
+  dateOfBirth: "",
+  weight: "",
+  primaryPhysician: "",
+  healthInsurance: "",
+  advanceDirectives: "",
+  organDonor: "",
+  language: "",
+  address: "",
+  recentHospitalizations: "",
+  allergies: "",
+  conditions: "",
+  medications: "",
+  medicationDosage: "",
+  emergencyContact: "",
+  emergencyPhone: "",
+  notes: "",
+  genotype: "",
+  hivStatus: "",
+  hepatitisStatus: "",
+  verificationStatus: "unverified",
+  verifiedBy: "",
+  verificationDate: "",
+  digitalSignature: "",
+  medicalImages: []
+};
+
+// Generate a unique emergency code
 const generateEmergencyCode = (): string => {
   const alphanumeric = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const numeric = '0123456789';
@@ -50,35 +90,11 @@ const generateEmergencyCode = (): string => {
 };
 
 export const useFormState = (initialData?: MedicalRecord, onSave?: (record: MedicalRecord) => void, onClose?: () => void) => {
-  const [formData, setFormData] = useState<FormData>({
-    fullName: "",
-    bloodGroup: "",
-    age: "",
-    sex: "",
-    maritalStatus: "",
-    dateOfBirth: "",
-    weight: "",
-    primaryPhysician: "",
-    healthInsurance: "",
-    advanceDirectives: "",
-    organDonor: "",
-    language: "",
-    address: "",
-    recentHospitalizations: "",
-    allergies: "",
-    conditions: "",
-    medications: "",
-    medicationDosage: "",
-    emergencyContact: "",
-    emergencyPhone: "",
-    notes: "",
-    genotype: "",
-    hivStatus: "",
-    hepatitisStatus: ""
-  });
+  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   
+  // Initialize form with data if provided
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -105,11 +121,17 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
         notes: initialData.notes || "",
         genotype: initialData.genotype || "",
         hivStatus: initialData.hivStatus || "",
-        hepatitisStatus: initialData.hepatitisStatus || ""
+        hepatitisStatus: initialData.hepatitisStatus || "",
+        verificationStatus: initialData.verificationStatus || "unverified",
+        verifiedBy: initialData.verifiedBy || "",
+        verificationDate: initialData.verificationDate || "",
+        digitalSignature: initialData.digitalSignature || "",
+        medicalImages: initialData.medicalImages || []
       });
     }
   }, [initialData]);
 
+  // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -118,17 +140,66 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  // Handle medical image operations
+  const handleAddMedicalImage = (image: MedicalImage) => {
+    setFormData(prev => ({
+      ...prev,
+      medicalImages: [...(prev.medicalImages || []), image]
+    }));
+  };
+
+  const handleRemoveMedicalImage = (imageId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      medicalImages: (prev.medicalImages || []).filter(img => img.id !== imageId)
+    }));
+  };
+
+  // Handle verification status change
+  const handleVerificationStatusChange = (isVerified: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      verificationStatus: isVerified ? 'verified' : 'unverified',
+      // If unchecking, reset verification fields
+      ...(isVerified ? {} : {
+        verifiedBy: "",
+        verificationDate: "",
+        digitalSignature: ""
+      })
+    }));
+  };
+
+  // Validate form data
+  const validateForm = (): boolean => {
     if (!formData.fullName || !formData.bloodGroup) {
       toast({
         title: "Error",
         description: "Please enter at least full name and blood group.",
         variant: "destructive",
       });
-      return;
+      return false;
     }
+
+    // Validation for verification fields
+    if (formData.verificationStatus === 'verified') {
+      if (!formData.verifiedBy || !formData.verificationDate) {
+        toast({
+          title: "Verification Error",
+          description: "Please complete all verification fields",
+          variant: "destructive",
+        });
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
 
     setLoading(true);
     
@@ -157,32 +228,7 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
       });
       
       if (!initialData) {
-        setFormData({
-          fullName: "",
-          bloodGroup: "",
-          age: "",
-          sex: "",
-          maritalStatus: "",
-          dateOfBirth: "",
-          weight: "",
-          primaryPhysician: "",
-          healthInsurance: "",
-          advanceDirectives: "",
-          organDonor: "",
-          language: "",
-          address: "",
-          recentHospitalizations: "",
-          allergies: "",
-          conditions: "",
-          medications: "",
-          medicationDosage: "",
-          emergencyContact: "",
-          emergencyPhone: "",
-          notes: "",
-          genotype: "",
-          hivStatus: "",
-          hepatitisStatus: ""
-        });
+        setFormData(initialFormData);
       }
       
       if (onClose) onClose();
@@ -202,6 +248,9 @@ export const useFormState = (initialData?: MedicalRecord, onSave?: (record: Medi
     formData,
     loading,
     handleInputChange,
-    handleSubmit
+    handleSubmit,
+    handleVerificationStatusChange,
+    handleAddMedicalImage,
+    handleRemoveMedicalImage
   };
 };

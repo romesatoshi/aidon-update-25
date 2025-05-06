@@ -5,22 +5,40 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import Icons from "@/components/Icons";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [hipaaConsent, setHipaaConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!hipaaConsent) {
+      toast({
+        title: "Consent Required",
+        description: "You must consent to HIPAA regulations to proceed",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
       await login(email, password);
+      
+      // Save HIPAA consent to localStorage
+      localStorage.setItem("hipaaConsent", "true");
+      
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
@@ -69,6 +87,28 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+            </div>
+            
+            <div className="space-y-1 pt-2">
+              <div className="flex items-start gap-2">
+                <Checkbox 
+                  id="hipaa-consent" 
+                  checked={hipaaConsent} 
+                  onCheckedChange={(checked) => setHipaaConsent(!!checked)}
+                  className="mt-1"
+                />
+                <div>
+                  <Label 
+                    htmlFor="hipaa-consent"
+                    className="text-sm leading-none"
+                  >
+                    I consent to my medical records being saved and used in accordance with HIPAA regulations
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Your data is protected per the Health Insurance Portability and Accountability Act and other regulatory requirements
+                  </p>
+                </div>
+              </div>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">

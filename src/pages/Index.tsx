@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -9,6 +10,7 @@ import Icons from "@/components/Icons";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { MedicalRecord } from "@/components/medical-records/types";
+import AutoDismissLovableBadge from "@/components/AutoDismissLovableBadge";
 import { 
   Dialog,
   DialogContent,
@@ -117,10 +119,25 @@ const Index = () => {
       
       let updatedEmergency = emergency;
       
-      updatedEmergency += "\n\nAdditional Information:";
+      updatedEmergency += "\n\nAdditional Assessment Information:";
+      
+      // First add regular answers
       for (const [question, answer] of Object.entries(additionalDetails)) {
-        if (answer.trim()) {
+        if (answer.trim() && !question.includes("Red Cross Protocol")) {
           updatedEmergency += `\n- ${question}: ${answer}`;
+        }
+      }
+      
+      // Then add protocol-based responses separately for clarity
+      let hasProtocols = false;
+      for (const [question, answer] of Object.entries(additionalDetails)) {
+        if (question.includes("Red Cross Protocol") && answer.trim()) {
+          if (!hasProtocols) {
+            updatedEmergency += "\n\nRed Cross Protocol Guidance:";
+            hasProtocols = true;
+          }
+          const baseQuestion = question.replace(" - Red Cross Protocol", "");
+          updatedEmergency += `\n- For "${baseQuestion}": ${answer}`;
         }
       }
       
@@ -130,8 +147,8 @@ const Index = () => {
       addEmergencyEntry(emergencyTitle, guidance, additionalDetails);
       
       toast({
-        title: "Information updated",
-        description: "The additional details have been saved and added to your guidance.",
+        title: "Assessment complete",
+        description: "Additional protocol-based guidance has been provided based on your answers.",
       });
     }
     
@@ -190,6 +207,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen transition-colors duration-300 relative">
+      <AutoDismissLovableBadge />
       <UserSidebar 
         history={data.history} 
         medicalRecords={data.medicalRecords || []}
@@ -202,10 +220,10 @@ const Index = () => {
       <div className="container max-w-3xl mx-auto p-4 md:p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
-            <Icons.emergency className="mr-2 h-6 w-6 text-emergency" />
             <span className="hidden xs:inline">Aid-On: Medical Guidance Assistant</span>
             <span className="xs:hidden">Aid-On</span>
           </h1>
+          
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
@@ -223,7 +241,11 @@ const Index = () => {
               </div>
             ) : (
               <Link to="/login">
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1 bg-background hover:bg-primary hover:text-primary-foreground border-primary/30 text-primary"
+                >
                   <Icons.login className="h-4 w-4 sm:mr-1" />
                   <span className="hidden sm:inline">Sign In</span>
                 </Button>

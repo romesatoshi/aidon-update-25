@@ -12,12 +12,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Shield, Clock, AlertCircle, Check, Clipboard, ShieldCheck } from 'lucide-react';
 import Icons from './Icons';
 import { MedicalRecord } from './medical-records/types';
 
@@ -28,28 +23,18 @@ interface QRCodeGeneratorProps {
 const QRCodeGenerator = ({ medicalRecord }: QRCodeGeneratorProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Generate enhanced emergency information string with essential data including medical conditions
+  // Generate concise emergency information with verification status only (not verifier name)
   const emergencyInfo = `EMERGENCY MEDICAL INFO:
-Code: ${medicalRecord.emergencyCode || "N/A"}
 Name: ${medicalRecord.fullName}
 Age: ${medicalRecord.age}
-Blood Group: ${medicalRecord.bloodGroup}
-Genotype: ${medicalRecord.genotype || "Not provided"}
-HIV Status: ${medicalRecord.hivStatus || "Not provided"}
-Hepatitis Status: ${medicalRecord.hepatitisStatus || "Not provided"}
-Allergies: ${medicalRecord.allergies || "None reported"}
-Medical Conditions: ${medicalRecord.conditions || "None reported"}
-Medications: ${medicalRecord.medications || "None reported"}
-Emergency Contact: ${medicalRecord.emergencyContact || "Not provided"}
-Emergency Phone: ${medicalRecord.emergencyPhone || "Not provided"}`;
-
-  // Generate a more concise version for quick identification
-  const quickIdInfo = `EMERGENCY ID:
-Code: ${medicalRecord.emergencyCode || "N/A"}
-Name: ${medicalRecord.fullName}
-Age: ${medicalRecord.age}
-Blood: ${medicalRecord.bloodGroup}
-Emergency: ${medicalRecord.emergencyPhone || "Not provided"}`;
+Blood Type: ${medicalRecord.bloodGroup || "Unknown"}
+Allergies: ${medicalRecord.allergies || "None"}
+Emergency Contact: ${medicalRecord.emergencyContact || "None"}
+Emergency Phone: ${medicalRecord.emergencyPhone || "None"}
+${medicalRecord.verificationStatus === 'verified' ? 
+  `Verification Status: Verified
+  Verification Date: ${medicalRecord.verificationDate || new Date().toLocaleDateString()}` : 
+  "Verification Status: " + (medicalRecord.verificationStatus || "Unverified")}`;
 
   // Function to copy text to clipboard
   const copyToClipboard = (text: string) => {
@@ -70,63 +55,81 @@ Emergency: ${medicalRecord.emergencyPhone || "Not provided"}`;
           variant="outline" 
           size="sm" 
           className="flex items-center justify-center gap-1"
+          title="Generate Emergency QR Code"
         >
           <Icons.qrCode className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Emergency Medical QR Code</DialogTitle>
+          <DialogTitle>Essential Emergency Medical QR Code</DialogTitle>
           <DialogDescription>
-            Scan this QR code to access essential emergency medical information for {medicalRecord.fullName}.
-            {medicalRecord.emergencyCode && (
-              <div className="mt-2 p-2 bg-muted rounded-md">
-                <p className="text-xs font-mono">Emergency Code: {medicalRecord.emergencyCode}</p>
-              </div>
+            This QR code contains critical medical information for quick reference.
+            {medicalRecord.verificationStatus === 'verified' && (
+              <span className="inline-flex items-center mt-2 text-green-600 gap-1 text-xs">
+                <ShieldCheck className="h-3 w-3" /> Verified medical information
+              </span>
             )}
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs defaultValue="quick" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="quick">Quick ID</TabsTrigger>
-            <TabsTrigger value="full">Full Details</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="quick" className="space-y-4">
-            <div className="flex items-center justify-center p-4">
-              <div className="bg-white p-4 rounded-md">
-                <QRCodeSVG 
-                  value={quickIdInfo}
-                  size={200}
-                  level="H"
-                  includeMargin={true}
-                />
-              </div>
-            </div>
-            <div className="bg-muted p-4 rounded-md max-h-32 overflow-y-auto">
-              <pre className="text-xs whitespace-pre-wrap">{quickIdInfo}</pre>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="full" className="space-y-4">
-            <div className="flex items-center justify-center p-4">
-              <div className="bg-white p-4 rounded-md">
-                <QRCodeSVG 
-                  value={emergencyInfo}
-                  size={200}
-                  level="H"
-                  includeMargin={true}
-                />
-              </div>
-            </div>
-            <div className="bg-muted p-4 rounded-md max-h-32 overflow-y-auto">
-              <pre className="text-xs whitespace-pre-wrap">{emergencyInfo}</pre>
-            </div>
-          </TabsContent>
-        </Tabs>
+        <div className="flex items-center justify-center p-4">
+          <div className={`bg-white p-4 rounded-md ${medicalRecord.verificationStatus === 'verified' ? 'border-2 border-green-500' : ''}`}>
+            <QRCodeSVG 
+              value={emergencyInfo}
+              size={200}
+              level="H"
+              includeMargin={true}
+            />
+          </div>
+        </div>
+        
+        <div className="bg-muted p-4 rounded-md max-h-40 overflow-y-auto">
+          <pre className="text-xs whitespace-pre-wrap">{emergencyInfo}</pre>
+        </div>
 
-        <DialogFooter className="flex flex-col sm:flex-row gap-2">
+        {/* Verification status indicator */}
+        <div className="mt-2 p-2 border rounded-md">
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-medium">Authentication Status:</div>
+            <div className="flex items-center">
+              {medicalRecord.verificationStatus === 'verified' ? (
+                <span className="inline-flex items-center text-green-600 gap-1">
+                  <ShieldCheck className="h-4 w-4" /> Verified
+                </span>
+              ) : medicalRecord.verificationStatus === 'pending' ? (
+                <span className="inline-flex items-center text-amber-600 gap-1">
+                  <Clock className="h-4 w-4" /> Pending Verification
+                </span>
+              ) : (
+                <span className="inline-flex items-center text-gray-500 gap-1">
+                  <AlertCircle className="h-4 w-4" /> Unverified
+                </span>
+              )}
+            </div>
+          </div>
+          
+          {medicalRecord.verificationStatus === 'verified' && (
+            <div className="mt-2 pt-2 border-t text-xs">
+              {medicalRecord.verificationDate && (
+                <div className="flex justify-between mb-1">
+                  <span className="text-muted-foreground">Verified Date:</span>
+                  <span>{medicalRecord.verificationDate}</span>
+                </div>
+              )}
+              {medicalRecord.digitalSignature && (
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Digital Signature:</span>
+                  <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                    {medicalRecord.digitalSignature.substring(0, 16)}...
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
           <Button
             type="button"
             variant="outline"
@@ -135,12 +138,12 @@ Emergency: ${medicalRecord.emergencyPhone || "Not provided"}`;
           >
             {copied ? (
               <>
-                <Icons.check className="mr-2 h-4 w-4" />
+                <Check className="mr-2 h-4 w-4" />
                 <span>Copied</span>
               </>
             ) : (
               <>
-                <Icons.clipboard className="mr-2 h-4 w-4" />
+                <Clipboard className="mr-2 h-4 w-4" />
                 <span>Copy to Clipboard</span>
               </>
             )}

@@ -5,7 +5,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import Icons from "@/components/Icons";
 
 const Register = () => {
@@ -15,7 +17,10 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [ndprConsent, setNdprConsent] = useState(false);
+  const [hipaaConsent, setHipaaConsent] = useState(false);
   const { register } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,11 +32,27 @@ const Register = () => {
       return;
     }
     
+    // Validate NDPR consent
+    if (!ndprConsent) {
+      setPasswordError("You must consent to data storage to proceed");
+      return;
+    }
+    
+    // Validate HIPAA consent
+    if (!hipaaConsent) {
+      setPasswordError("You must consent to HIPAA regulations to proceed");
+      return;
+    }
+    
     setPasswordError("");
     setIsSubmitting(true);
     
     try {
       await register(name, email, password);
+      
+      // Save HIPAA consent to localStorage
+      localStorage.setItem("hipaaConsent", "true");
+      
       navigate("/");
     } catch (error) {
       console.error("Registration error:", error);
@@ -100,9 +121,45 @@ const Register = () => {
                 <p className="text-sm text-destructive">{passwordError}</p>
               )}
             </div>
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <Checkbox 
+                  id="ndpr-consent"
+                  checked={ndprConsent}
+                  onCheckedChange={(checked) => setNdprConsent(!!checked)}
+                  className="mr-2"
+                />
+                <Label 
+                  htmlFor="ndpr-consent" 
+                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  I consent to my data storage per NDPR
+                </Label>
+              </div>
+              
+              <div className="flex items-start gap-2 mt-3">
+                <Checkbox 
+                  id="hipaa-consent" 
+                  checked={hipaaConsent} 
+                  onCheckedChange={(checked) => setHipaaConsent(!!checked)}
+                  className="mt-1"
+                />
+                <div>
+                  <Label 
+                    htmlFor="hipaa-consent"
+                    className="text-sm leading-none"
+                  >
+                    I consent to my medical records being saved and used in accordance with HIPAA regulations
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Your data is protected per the Health Insurance Portability and Accountability Act and other regulatory requirements
+                  </p>
+                </div>
+              </div>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button type="submit" className="w-full" disabled={isSubmitting || !ndprConsent || !hipaaConsent}>
               {isSubmitting ? (
                 <>
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
