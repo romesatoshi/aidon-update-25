@@ -130,11 +130,6 @@ const Login = () => {
             </div>
           </CardFooter>
         </form>
-        <div className="px-6 pb-6 text-xs text-center text-muted-foreground">
-          <p>For demo purposes, use:</p>
-          <p>Email: test@example.com / Password: password123</p>
-          <p>After password reset: password is 'reset123'</p>
-        </div>
       </Card>
     </div>
   );
